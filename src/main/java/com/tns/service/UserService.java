@@ -1,10 +1,13 @@
 package com.tns.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tns.dto.LoginRequest;
+import com.tns.dto.LoginResponse;
 import com.tns.dto.RegisterRequest;
 import com.tns.model.Role;
 import com.tns.model.User;
@@ -15,40 +18,36 @@ import com.tns.repository.UserRoleRepository;
 
 @Service
 public class UserService {
+@Autowired
+    private  UserRepository userRepo;
+@Autowired
+    private  RoleRepository roleRepo;
+@Autowired
+    private  UserRoleRepository userRoleRepo;
+@Autowired
+    private  PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private UserRepository userRepo;
 
-    @Autowired
-    private RoleRepository roleRepo;
-
-    @Autowired
-    private UserRoleRepository userRoleRepo;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    // 🔹 REGISTER
     public String register(RegisterRequest request) {
 
-        if (userRepo.findByUsername(request.getUsername()).isPresent()) {
-            return "Username already exists";
-        }
-
         if (userRepo.findByEmail(request.getEmail()).isPresent()) {
-            return "Email already exists";
+            throw new RuntimeException("Email already exists");
         }
 
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPassword(
+                passwordEncoder.encode(request.getPassword()));
+        user.setIsActive(true);
+        user.setCreatedAt(LocalDateTime.now());
 
         userRepo.save(user);
 
-        // assign TEACHER role
-        Role role = roleRepo.findByRoleName("TEACHER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+        Role role = roleRepo.findByRoleName(
+                request.getRoleName())
+                .orElseThrow(() ->
+                        new RuntimeException("Role not found"));
 
         UserRole userRole = new UserRole();
         userRole.setUser(user);
@@ -56,20 +55,28 @@ public class UserService {
 
         userRoleRepo.save(userRole);
 
-        return "Registration successful";
+        return "User registered successfully";
     }
 
-    // 🔹 LOGIN
-    public String login(LoginRequest request) {
+    public LoginResponse login(LoginRequest request) {
 
-        User user = userRepo.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepo.findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new RuntimeException("Invalid credentials"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return "Invalid Password";
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+            throw new RuntimeException("Invalid credentials");
         }
 
-        return "Login Successful";
-        
+        UserRole userRole = user.getUserRoles().get(0);
+
+        LoginResponse response = new LoginResponse();
+        response.setUserId(user.getUserId());
+        response.setUsername(user.getUsername());
+        response.setRole(userRole.getRole().getRoleName());
+
+        return response;
     }
 }

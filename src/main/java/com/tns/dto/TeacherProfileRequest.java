@@ -6,42 +6,32 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public class TeacherProfileRequest {
-
-    @NotNull
+    @NotNull(message = "User ID is required")
     private Long userId;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "Full name is required")
     private String fullName;
 
-    @NotBlank
-    @Pattern(regexp = "^[0-9]{10}$")
+    @NotBlank(message = "Phone number is required")
+    @Pattern(regexp = "[0-9]{7,15}$", message = "Invalid phone number format")
     private String phoneNumber;
 
-    @NotNull
-    @Past
+    @NotNull(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
     private LocalDate dateOfBirth;
 
-    @NotBlank
     private String gender;
-
-    @NotBlank
     private String maritalStatus;
-
-    @NotBlank
     private String nationality;
 
-    @NotBlank
-    @Size(max = 100)
+    @NotBlank(message = "National ID number is required")
     private String nationalIdNumber;
 
-    @NotBlank
+    @NotBlank(message = "Address is required")
     private String address;
 
-    @Size(max = 500)
     private String profilePhotoPath;
 
 	public Long getUserId() {
@@ -124,4 +114,9 @@ public class TeacherProfileRequest {
 		this.profilePhotoPath = profilePhotoPath;
 	}
 
+	
+    
+    
+    
 }
+

@@ -4,56 +4,70 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tns.dto.TeacherProfileRequest;
+import com.tns.dto.TeacherProfileResponse;
 import com.tns.model.TeacherProfile;
-import com.tns.model.User;
 import com.tns.repository.MasterLookupRepository;
 import com.tns.repository.TeacherProfileRepository;
 import com.tns.repository.UserRepository;
 
 @Service
 public class TeacherProfileService {
-
     @Autowired private TeacherProfileRepository repo;
     @Autowired private UserRepository userRepo;
     @Autowired private MasterLookupRepository lookupRepo;
 
-    public String saveOrUpdate(TeacherProfileRequest request){
+    public String saveOrUpdate(TeacherProfileRequest req) {
+        // If profile exists for this user, update it; else create new
+        TeacherProfile profile = repo.findByUser_UserId(req.getUserId())
+            .orElse(new TeacherProfile());
 
-        User user = userRepo.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        profile.setUser(userRepo.findById(req.getUserId())
+            .orElseThrow(() -> new RuntimeException("User not found")));
+        profile.setFullName(req.getFullName());
+        profile.setPhoneNumber(req.getPhoneNumber());
+        profile.setDateOfBirth(req.getDateOfBirth());
 
-        boolean exists = repo.existsByUser_UserId(request.getUserId());
+        if (req.getGender() != null) {
+            profile.setGender(lookupRepo.findByLookupTypeAndLookupValue("GENDER", req.getGender())
+                .orElseThrow(() -> new RuntimeException("Invalid gender")));
+        }
+        if (req.getMaritalStatus() != null) {
+            profile.setMaritalStatus(lookupRepo.findByLookupTypeAndLookupValue("MARITAL_STATUS", req.getMaritalStatus())
+                .orElseThrow(() -> new RuntimeException("Invalid marital status")));
+        }
+        if (req.getNationality() != null) {
+            profile.setNationality(lookupRepo.findByLookupTypeAndLookupValue("NATIONALITY", req.getNationality())
+                .orElseThrow(() -> new RuntimeException("Invalid nationality")));
+        }
 
-        TeacherProfile profile =
-                repo.findByUser_UserId(request.getUserId())
-                        .orElse(new TeacherProfile());
-
-        profile.setUser(user);
-        profile.setFullName(request.getFullName());
-        profile.setPhoneNumber(request.getPhoneNumber());
-        profile.setDateOfBirth(request.getDateOfBirth());
-
-        profile.setGender(
-                lookupRepo.findByLookupTypeAndLookupValue(
-                        "GENDER", request.getGender()).orElseThrow());
-
-        profile.setMaritalStatus(
-                lookupRepo.findByLookupTypeAndLookupValue(
-                        "MARITAL_STATUS", request.getMaritalStatus()).orElseThrow());
-
-        profile.setNationality(
-                lookupRepo.findByLookupTypeAndLookupValue(
-                        "NATIONALITY", request.getNationality()).orElseThrow());
-
-        profile.setNationalIdNumber(request.getNationalIdNumber());
-        profile.setAddress(request.getAddress());
-        profile.setProfilePhotoPath(request.getProfilePhotoPath());
+        profile.setNationalIdNumber(req.getNationalIdNumber());
+        profile.setAddress(req.getAddress());
+        profile.setProfilePhotoPath(req.getProfilePhotoPath());
 
         repo.save(profile);
 
-        return exists ?
-                "Profile updated successfully" :
-                "Profile created successfully";
+        return profile.getTeacherId() != null
+            ? "Teacher profile updated successfully"
+            : "Teacher profile saved successfully";
+
+    }
+
+    public TeacherProfileResponse getByUser(Long userId) {
+        return repo.findByUser_UserId(userId).map(this::map)
+            .orElseThrow(() -> new RuntimeException("Profile not found"));
+    }
+
+    private TeacherProfileResponse map(TeacherProfile p) {
+        TeacherProfileResponse r = new TeacherProfileResponse();
+        r.setTeacherId(p.getTeacherId());
+        r.setFullName(p.getFullName());
+        r.setPhoneNumber(p.getPhoneNumber());
+        r.setGender(p.getGender()!=null?p.getGender().getLookupValue():null);
+        r.setMaritalStatus(p.getMaritalStatus()!=null?p.getMaritalStatus().getLookupValue():null);
+        r.setNationality(p.getNationality()!=null?p.getNationality().getLookupValue():null);
+        r.setNationalIdNumber(p.getNationalIdNumber());
+        r.setAddress(p.getAddress());
+        r.setProfilePhotoPath(p.getProfilePhotoPath());
+        return r;
     }
 }
-

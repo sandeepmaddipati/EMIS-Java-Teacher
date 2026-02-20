@@ -10,6 +10,5 @@ import com.tns.model.Application;
 public interface ApplicationRepository
         extends JpaRepository<Application, Long> {
 
-    Optional<Application>
-    findByTeacher_TeacherId(Long teacherId);
+    Optional<Application> findByTeacher_TeacherId(Long teacherId);
 }

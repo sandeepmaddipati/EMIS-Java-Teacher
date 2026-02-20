@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tns.dto.AcademicQualificationRequest;
+import com.tns.dto.AcademicQualificationResponse;
 import com.tns.model.AcademicQualification;
 import com.tns.model.Country;
 import com.tns.model.MasterLookup;
@@ -17,64 +18,59 @@ import com.tns.repository.TeacherProfileRepository;
 
 @Service
 public class AcademicQualificationService {
-
     @Autowired private AcademicQualificationRepository repo;
-    @Autowired private TeacherProfileRepository profileRepo;
+    @Autowired private TeacherProfileRepository teacherRepo;
     @Autowired private MasterLookupRepository lookupRepo;
     @Autowired private CountryRepository countryRepo;
 
-    public String saveOrUpdate(AcademicQualificationRequest request){
+    public String saveOrUpdate(AcademicQualificationRequest req) {
+        AcademicQualification aq = (req.getAcademicQualificationId() != null)
+            ? repo.findById(req.getAcademicQualificationId()).orElse(new AcademicQualification())
+            : new AcademicQualification();
 
-        TeacherProfile teacher =
-                profileRepo.findByUser_UserId(request.getUserId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Teacher profile not found"));
+        TeacherProfile teacher = teacherRepo.findById(req.getTeacherId())
+        	    .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        AcademicQualification aq;
+        	MasterLookup level = lookupRepo.findByLookupTypeAndLookupValue("QUALIFICATION_LEVEL", req.getQualificationLevel())
+        	    .orElseThrow(() -> new RuntimeException("Invalid qualification level"));
 
-        if(request.getAcademicQualificationId() != null){
-            aq = repo.findByAcademicQualificationIdAndTeacher_TeacherId(
-                    request.getAcademicQualificationId(),
-                    teacher.getTeacherId())
-                    .orElseThrow(() ->
-                            new RuntimeException("Academic record not found"));
-        } else {
-            aq = new AcademicQualification();
-            aq.setTeacher(teacher);
-        }
+        	Country country = countryRepo.findByCountryName(req.getCountryName())
+        	    .orElseThrow(() -> new RuntimeException("Invalid country"));
 
-        MasterLookup level =
-                lookupRepo.findByLookupTypeAndLookupValue(
-                        "QUALIFICATION_LEVEL",
-                        request.getQualificationLevel())
-                        .orElseThrow(() ->
-                                new RuntimeException("Invalid qualification level"));
+        	aq.setTeacher(teacher);          // ✅ TeacherProfile
+        	aq.setQualificationLevel(level); // ✅ MasterLookup
+        	aq.setInstitutionName(req.getInstitutionName());
+        	aq.setFieldOfStudy(req.getFieldOfStudy());
+        	aq.setCountry(country);          // ✅ Country
+        	aq.setStartYear(req.getStartYear());
+        	aq.setEndYear(req.getEndYear());
 
-        Country country =
-                countryRepo.findById(request.getCountryId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Invalid country"));
 
-        aq.setQualificationLevel(level);
-        aq.setInstitutionName(request.getInstitutionName());
-        aq.setFieldOfStudy(request.getFieldOfStudy());
-        aq.setCountry(country);
-        aq.setStartYear(request.getStartYear());
-        aq.setEndYear(request.getEndYear());
+        	 repo.save(aq);
 
-        repo.save(aq);
+             return req.getAcademicQualificationId() != null
+                     ? "Academic qualification updated successfully"
+                     : "Academic qualification added successfully";
 
-        return request.getAcademicQualificationId() != null
-                ? "Academic qualification updated"
-                : "Academic qualification added";
+    }
+    public List<AcademicQualificationResponse> getAllByTeacher(Long teacherId) {
+        return repo.findByTeacher_TeacherId(teacherId)
+                   .stream()
+                   .map(this::map)
+                   .toList();
     }
 
-    public List<AcademicQualification> getAllByUserId(Long userId){
-
-        TeacherProfile teacher =
-                profileRepo.findByUser_UserId(userId)
-                        .orElseThrow();
-
-        return repo.findByTeacher_TeacherId(teacher.getTeacherId());
+    private AcademicQualificationResponse map(AcademicQualification aq) {
+        AcademicQualificationResponse r = new AcademicQualificationResponse();
+        r.setAcademicQualificationId(aq.getAcademicQualificationId());
+        r.setQualificationLevel(aq.getQualificationLevel()!=null?aq.getQualificationLevel().getLookupValue():null);
+        r.setInstitutionName(aq.getInstitutionName());
+        r.setFieldOfStudy(aq.getFieldOfStudy());
+        r.setCountry(aq.getCountry()!=null?aq.getCountry().getCountryName():null);
+        r.setStartYear(aq.getStartYear());
+        r.setEndYear(aq.getEndYear());
+        return r;
     }
+
+	
 }

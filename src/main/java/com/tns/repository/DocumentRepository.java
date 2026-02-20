@@ -7,14 +7,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.tns.model.Document;
+import com.tns.model.MasterLookup;
 @Repository
 public interface DocumentRepository
         extends JpaRepository<Document, Long> {
 
-    Optional<Document>
-    findByDocumentIdAndTeacher_TeacherId(
-            Long documentId, Long teacherId);
 
     List<Document>
     findByTeacher_TeacherId(Long teacherId);
+
+	
 }

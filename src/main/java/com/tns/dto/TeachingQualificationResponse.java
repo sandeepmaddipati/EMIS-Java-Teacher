@@ -1,94 +1,57 @@
 package com.tns.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+public class TeachingQualificationResponse {
 
-public class TeachingQualificationRequest {
-
-    @NotNull
-    private Long teacherId;
     private Long TeachingQualificationId;
-    @NotBlank
     private String qualificationName;
-
-    @NotNull
-    private String certificationType;
-
-    @NotBlank
+    private String certificationTypeId;
     private String institutionName;
-
-    @NotNull
     private String countryName;
-
-    @NotNull
     private Integer startYear;
-
     private Integer endYear;
-
-	public Long getTeacherId() {
-		return teacherId;
-	}
-
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
-	}
-
 	public Long getTeachingQualificationId() {
 		return TeachingQualificationId;
 	}
-
 	public void setTeachingQualificationId(Long teachingQualificationId) {
 		TeachingQualificationId = teachingQualificationId;
 	}
-
 	public String getQualificationName() {
 		return qualificationName;
 	}
-
 	public void setQualificationName(String qualificationName) {
 		this.qualificationName = qualificationName;
 	}
-
-	public String getCertificationType() {
-		return certificationType;
+	public String getCertificationTypeId() {
+		return certificationTypeId;
 	}
-
-	public void setCertificationType(String certificationType) {
-		this.certificationType = certificationType;
+	public void setCertificationTypeId(String certificationTypeId) {
+		this.certificationTypeId = certificationTypeId;
 	}
-
 	public String getInstitutionName() {
 		return institutionName;
 	}
-
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-
 	public String getCountryName() {
 		return countryName;
 	}
-
 	public void setCountryName(String countryName) {
 		this.countryName = countryName;
 	}
-
 	public Integer getStartYear() {
 		return startYear;
 	}
-
 	public void setStartYear(Integer startYear) {
 		this.startYear = startYear;
 	}
-
 	public Integer getEndYear() {
 		return endYear;
 	}
-
 	public void setEndYear(Integer endYear) {
 		this.endYear = endYear;
 	}
-
 	
- 
+	
+  
 }

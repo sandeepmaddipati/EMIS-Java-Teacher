@@ -1,28 +1,34 @@
-package com.tns.controller;
+	package com.tns.controller;
+
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tns.dto.TeachingQualificationRequest;
+import com.tns.dto.TeachingQualificationResponse;
 import com.tns.service.TeachingQualificationService;
 
-import jakarta.validation.Valid;
-
 @RestController
-@RequestMapping("/api/teacher/teaching")
+@RequestMapping("/api/teaching-qualifications")
 public class TeachingQualificationController {
 
     @Autowired
-    private TeachingQualificationService service;
+    private TeachingQualificationService qualificationService;
 
-    @PostMapping
+    // Save or Update
+    @PostMapping("/saveOrUpdate")
     public ResponseEntity<String> saveOrUpdate(
-            @Valid @RequestBody TeachingQualificationRequest request){
+            @RequestBody TeachingQualificationRequest request) {
+        String response = qualificationService.saveOrUpdate(request);
+        return ResponseEntity.ok(response);
+    }
 
-        return ResponseEntity.ok(service.saveOrUpdate(request));
+    // Get all qualifications for a teacher
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<TeachingQualificationResponse>> getAllByTeacher(@PathVariable Long teacherId) {
+        List<TeachingQualificationResponse> responses = qualificationService.getAllByTeacher(teacherId);
+        return ResponseEntity.ok(responses);
     }
 }

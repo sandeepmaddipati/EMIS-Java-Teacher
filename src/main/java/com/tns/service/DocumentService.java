@@ -1,10 +1,14 @@
 package com.tns.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tns.dto.DocumentRequest;
+import com.tns.dto.DocumentResponse;
 import com.tns.model.Document;
+import com.tns.model.MasterLookup;
 import com.tns.model.TeacherProfile;
 import com.tns.repository.DocumentRepository;
 import com.tns.repository.MasterLookupRepository;
@@ -12,49 +16,44 @@ import com.tns.repository.TeacherProfileRepository;
 
 @Service
 public class DocumentService {
-
     @Autowired private DocumentRepository repo;
-    @Autowired private TeacherProfileRepository profileRepo;
+    @Autowired private TeacherProfileRepository teacherRepo;
     @Autowired private MasterLookupRepository lookupRepo;
 
-    public String saveOrUpdate(DocumentRequest request){
+    public String saveOrUpdate(DocumentRequest req) {
+        Document d = (req.getDocumentId() != null)
+            ? repo.findById(req.getDocumentId()).orElse(new Document())
+            : new Document();
 
-        TeacherProfile teacher =
-                profileRepo.findByUser_UserId(request.getUserId())
-                        .orElseThrow(() ->
-                                new RuntimeException("Teacher profile not found"));
+        TeacherProfile teacher = teacherRepo.findById(req.getTeacherId())
+            .orElseThrow(() -> new RuntimeException("Teacher not found"));
 
-        Document doc;
+        MasterLookup docType = lookupRepo.findByLookupTypeAndLookupValue("DOCUMENT_TYPE", req.getDocumentType())
+            .orElseThrow(() -> new RuntimeException("Invalid document type"));
 
-        if(request.getDocumentId() != null){
-            doc = repo.findByDocumentIdAndTeacher_TeacherId(
-                    request.getDocumentId(),
-                    teacher.getTeacherId())
-                    .orElseThrow(() ->
-                            new RuntimeException("Document not found"));
-        } else {
-            doc = new Document();
-            doc.setTeacher(teacher);
-        }
+        d.setTeacher(teacher);
+        d.setDocumentType(docType);
+        d.setFileName(req.getFileName());
+        d.setFilePath(req.getFilePath());
+        repo.save(d);
 
-        doc.setDocumentType(
-                lookupRepo.findByLookupTypeAndLookupValue(
-                        "DOCUMENT_TYPE",
-                        request.getDocumentType())
-                        .orElseThrow());
+        return req.getDocumentId() != null
+            ? "Document updated successfully"
+            : "Document added successfully";
 
-        doc.setFileName(request.getFileName());
-        doc.setFilePath(request.getFilePath());
-
-        repo.save(doc);
-
-        return request.getDocumentId() != null
-                ? "Document updated"
-                : "Document uploaded";
     }
 
+    public List<DocumentResponse> getAllByTeacher(Long teacherId) {
+        return repo.findByTeacher_TeacherId(teacherId).stream().map(this::map).toList();
+    }
 
-
-
+    private DocumentResponse map(Document d) {
+        DocumentResponse r = new DocumentResponse();
+        r.setDocumentId(d.getDocumentId());
+        r.setDocumentType(d.getDocumentType()!=null?d.getDocumentType().getLookupValue():null);
+        r.setFileName(d.getFileName());
+        r.setFilePath(d.getFilePath());
+        r.setUploadedAt(d.getUploadedAt());
+        return r;
+    }
 }
-

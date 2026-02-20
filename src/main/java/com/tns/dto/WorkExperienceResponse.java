@@ -1,45 +1,16 @@
-package com.tns.model;
+package com.tns.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "work_experiences")
-public class WorkExperience {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class WorkExperienceResponse {
     private Long workId;
-
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private TeacherProfile teacher;
-
     private String jobTitle;
     private String institutionName;
-
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
-
-    @ManyToOne
-    @JoinColumn(name = "state_id")
-    private State state;
-
-    @ManyToOne
-    @JoinColumn(name = "district_id")
-    private District district;
-
+    private String countryName;
+    private String stateName;
+    private String districtName;
     private Integer startMonth;
     private Integer startYear;
     private Integer endMonth;
     private Integer endYear;
-
     private String referenceName;
     private String referencePhone;
     private String referenceEmail;
@@ -49,12 +20,6 @@ public class WorkExperience {
 	}
 	public void setWorkId(Long workId) {
 		this.workId = workId;
-	}
-	public TeacherProfile getTeacher() {
-		return teacher;
-	}
-	public void setTeacher(TeacherProfile teacher) {
-		this.teacher = teacher;
 	}
 	public String getJobTitle() {
 		return jobTitle;
@@ -68,23 +33,23 @@ public class WorkExperience {
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-	public Country getCountry() {
-		return country;
+	public String getCountryName() {
+		return countryName;
 	}
-	public void setCountry(Country country) {
-		this.country = country;
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
-	public State getState() {
-		return state;
+	public String getStateName() {
+		return stateName;
 	}
-	public void setState(State state) {
-		this.state = state;
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
-	public District getDistrict() {
-		return district;
+	public String getDistrictName() {
+		return districtName;
 	}
-	public void setDistrict(District district) {
-		this.district = district;
+	public void setDistrictName(String districtName) {
+		this.districtName = districtName;
 	}
 	public Integer getStartMonth() {
 		return startMonth;
@@ -134,7 +99,6 @@ public class WorkExperience {
 	public void setSupportingDocument(String supportingDocument) {
 		this.supportingDocument = supportingDocument;
 	}
-
-
-
-}
+    
+    
+	}

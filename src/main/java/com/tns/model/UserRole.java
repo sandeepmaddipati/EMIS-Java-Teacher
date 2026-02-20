@@ -31,17 +31,6 @@ public class UserRole {
 	@JoinColumn(name="role_id")
 	private Role role;
 
-	public UserRole() {
-		super();
-	}
-
-	public UserRole(Long userRoleId, User user, Role role) {
-		super();
-		this.userRoleId = userRoleId;
-		this.user = user;
-		this.role = role;
-	}
-
 	public Long getUserRoleId() {
 		return userRoleId;
 	}
@@ -65,6 +54,6 @@ public class UserRole {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-	
+
 	
 }

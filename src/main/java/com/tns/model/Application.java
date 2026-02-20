@@ -13,70 +13,53 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 
-	@Entity
-	@Table(name = "applications")
-	public class Application {
+@Entity
+@Table(name="applications")
+public class Application {
+    @Id @GeneratedValue(strategy=GenerationType.IDENTITY)
+    private Long applicationId;
 
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    @Column(name = "application_id")
-	    private Long applicationId;
+    @OneToOne
+    @JoinColumn(name="teacher_id", nullable=false, unique=true)
+    private TeacherProfile teacher;
 
-	    @OneToOne
-	    @JoinColumn(name = "teacher_id")
-	    private TeacherProfile teacher;
+    @ManyToOne
+    @JoinColumn(name="application_status_id", nullable=false)
+    private MasterLookup status;
 
-	    @ManyToOne
-	    @JoinColumn(name = "status_id")
-	    private MasterLookup status;
-
-	    @Column(name = "submitted_at")
-	    private LocalDateTime submittedAt;
-
-	    @Column(name = "created_at")
-	    private LocalDateTime createdAt = LocalDateTime.now();
-
-		public Long getApplicationId() {
-			return applicationId;
-		}
-
-		public void setApplicationId(Long applicationId) {
-			this.applicationId = applicationId;
-		}
-
-		public TeacherProfile getTeacher() {
-			return teacher;
-		}
-
-		public void setTeacher(TeacherProfile teacher) {
-			this.teacher = teacher;
-		}
-
-		public MasterLookup getStatus() {
-			return status;
-		}
-
-		public void setStatus(MasterLookup status) {
-			this.status = status;
-		}
-
-		public LocalDateTime getSubmittedAt() {
-			return submittedAt;
-		}
-
-		public void setSubmittedAt(LocalDateTime submittedAt) {
-			this.submittedAt = submittedAt;
-		}
-
-		public LocalDateTime getCreatedAt() {
-			return createdAt;
-		}
-
-		public void setCreatedAt(LocalDateTime createdAt) {
-			this.createdAt = createdAt;
-		}
-
-
+    private LocalDateTime submittedAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
+	public Long getApplicationId() {
+		return applicationId;
 	}
-
-
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
+	public TeacherProfile getTeacher() {
+		return teacher;
+	}
+	public void setTeacher(TeacherProfile teacher) {
+		this.teacher = teacher;
+	}
+	public MasterLookup getStatus() {
+		return status;
+	}
+	public void setStatus(MasterLookup status) {
+		this.status = status;
+	}
+	public LocalDateTime getSubmittedAt() {
+		return submittedAt;
+	}
+	public void setSubmittedAt(LocalDateTime submittedAt) {
+		this.submittedAt = submittedAt;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+ 
+    
+    
+}
