@@ -1,25 +1,55 @@
 package com.tns.dto;
 
+import java.time.LocalDateTime;
+
 public class AcademicQualificationResponse {
 
-	private Long academicQualificationId;
-    private String qualificationLevel;
+    private Long academicId;
+    private Long userId;
+    private String qualificationTitle;
+   
+
+    private Long qualificationTypeId;
+    private String qualificationType;
+    
     private String institutionName;
-    private String fieldOfStudy;
-    private String country;
-    private Integer startYear;
-    private Integer endYear;
-	public Long getAcademicQualificationId() {
-		return academicQualificationId;
+    
+    private Long countryId;
+    private String countryName;
+   
+    private Integer yearOfPassing;
+    private String certificatePath;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastUpdated;
+	public Long getAcademicId() {
+		return academicId;
 	}
-	public void setAcademicQualificationId(Long academicQualificationId) {
-		this.academicQualificationId = academicQualificationId;
+	public void setAcademicId(Long academicId) {
+		this.academicId = academicId;
 	}
-	public String getQualificationLevel() {
-		return qualificationLevel;
+	public Long getUserId() {
+		return userId;
 	}
-	public void setQualificationLevel(String qualificationLevel) {
-		this.qualificationLevel = qualificationLevel;
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	public String getQualificationTitle() {
+		return qualificationTitle;
+	}
+	public void setQualificationTitle(String qualificationTitle) {
+		this.qualificationTitle = qualificationTitle;
+	}
+	public Long getQualificationTypeId() {
+		return qualificationTypeId;
+	}
+	public void setQualificationTypeId(Long qualificationTypeId) {
+		this.qualificationTypeId = qualificationTypeId;
+	}
+	public String getQualificationType() {
+		return qualificationType;
+	}
+	public void setQualificationType(String qualificationType) {
+		this.qualificationType = qualificationType;
 	}
 	public String getInstitutionName() {
 		return institutionName;
@@ -27,31 +57,44 @@ public class AcademicQualificationResponse {
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-	public String getFieldOfStudy() {
-		return fieldOfStudy;
+	public Long getCountryId() {
+		return countryId;
 	}
-	public void setFieldOfStudy(String fieldOfStudy) {
-		this.fieldOfStudy = fieldOfStudy;
+	public void setCountryId(Long countryId) {
+		this.countryId = countryId;
 	}
-	public String getCountry() {
-		return country;
+	public String getCountryName() {
+		return countryName;
 	}
-	public void setCountry(String country) {
-		this.country = country;
-	}
-	public Integer getStartYear() {
-		return startYear;
-	}
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
-	}
-	public Integer getEndYear() {
-		return endYear;
-	}
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
+	public void setCountryName(String countryName) {
+		this.countryName = countryName;
 	}
 	
+	
+	public String getCertificatePath() {
+		return certificatePath;
 	}
+	public void setCertificatePath(String certificatePath) {
+		this.certificatePath = certificatePath;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getLastUpdated() {
+		return lastUpdated;
+	}
+	public void setLastUpdated(LocalDateTime lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+	public Integer getYearOfPassing() {
+		return yearOfPassing;
+	}
+	public void setYearOfPassing(Integer yearOfPassing) {
+		this.yearOfPassing = yearOfPassing;
+	}
+
     
-    
+}

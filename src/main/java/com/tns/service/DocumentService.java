@@ -1,59 +1,91 @@
 package com.tns.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.tns.dto.ApiResponse;
 import com.tns.dto.DocumentRequest;
 import com.tns.dto.DocumentResponse;
 import com.tns.model.Document;
-import com.tns.model.MasterLookup;
-import com.tns.model.TeacherProfile;
+import com.tns.model.LookupCategory;
 import com.tns.repository.DocumentRepository;
-import com.tns.repository.MasterLookupRepository;
-import com.tns.repository.TeacherProfileRepository;
+import com.tns.repository.LookupCategoryRepository;
 
 @Service
-public class DocumentService {
-    @Autowired private DocumentRepository repo;
-    @Autowired private TeacherProfileRepository teacherRepo;
-    @Autowired private MasterLookupRepository lookupRepo;
 
-    public String saveOrUpdate(DocumentRequest req) {
-        Document d = (req.getDocumentId() != null)
-            ? repo.findById(req.getDocumentId()).orElse(new Document())
-            : new Document();
+public class DocumentService{
+	
+	@Autowired
+	private DocumentRepository repository;
+	@Autowired
+	private LookupCategoryRepository categoryRepo;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
 
-        TeacherProfile teacher = teacherRepo.findById(req.getTeacherId())
-            .orElseThrow(() -> new RuntimeException("Teacher not found"));
+	
+	private String resolveLookupValue(String categoryKey,Long id) {
+        if (id == null) return null;
+        LookupCategory category=categoryRepo.findByCategoryKeyAndIsActiveTrue(categoryKey)
+        		.orElseThrow(()-> new RuntimeException("Category Not Found:"+categoryKey));
 
-        MasterLookup docType = lookupRepo.findByLookupTypeAndLookupValue("DOCUMENT_TYPE", req.getDocumentType())
-            .orElseThrow(() -> new RuntimeException("Invalid document type"));
+        	      String sql = "SELECT " + category.getValueColumn() +
+        	              " FROM " + category.getTableName() +
+        	              " WHERE " + category.getIdColumn() + " = ? AND is_active = true";
 
-        d.setTeacher(teacher);
-        d.setDocumentType(docType);
-        d.setFileName(req.getFileName());
-        d.setFilePath(req.getFilePath());
-        repo.save(d);
-
-        return req.getDocumentId() != null
-            ? "Document updated successfully"
-            : "Document added successfully";
-
+        	 return jdbcTemplate.queryForObject(sql, String.class, id);
     }
+	
+	public ApiResponse<DocumentResponse> saveOrUpdate(DocumentRequest request){
+		Optional<Document> existing = repository.findByUserId(request.getUserId())
+		.stream()
+		.filter(d -> d.getFileName().equalsIgnoreCase(request.getFileName()))
+        .findFirst();
+          Document entity;
+          String message;
+          
+          if(existing.isPresent()) {
+        	  entity=existing.get();
+        	  message="Documents Updated Successfully";
+          }else {
+        	  
+        	  entity=new Document();
+        	  entity.setUserId(request.getUserId());
+               message="Documents Saved Successfully";
+          }
+          
+          entity.setDocumentTypeId(request.getDocumentTypeId());
+          entity.setFileName(request.getFileName());
+          entity.setFilePath(request.getFilePath());
 
-    public List<DocumentResponse> getAllByTeacher(Long teacherId) {
-        return repo.findByTeacher_TeacherId(teacherId).stream().map(this::map).toList();
-    }
+          Document saved = repository.save(entity);
+          DocumentResponse response = mapToResponse(saved);
 
-    private DocumentResponse map(Document d) {
-        DocumentResponse r = new DocumentResponse();
-        r.setDocumentId(d.getDocumentId());
-        r.setDocumentType(d.getDocumentType()!=null?d.getDocumentType().getLookupValue():null);
-        r.setFileName(d.getFileName());
-        r.setFilePath(d.getFilePath());
-        r.setUploadedAt(d.getUploadedAt());
-        return r;
-    }
+          return new ApiResponse<>(200, message, response);
+
+	}
+	
+	public List<DocumentResponse> getByUserId ( Long userId){
+		return repository.findByUserId(userId)
+				.stream()
+				.map(this::mapToResponse)
+				.toList();
+	}
+	 private DocumentResponse mapToResponse(Document entity) {
+	        DocumentResponse dto = new DocumentResponse();
+	        dto.setDocumentId(entity.getDocumentId());
+	        dto.setUserId(entity.getUserId());
+	        dto.setDocumentTypeId(entity.getDocumentTypeId());
+	        dto.setDocumentType(resolveLookupValue("document_types",entity.getDocumentTypeId()));
+	        dto.setFileName(entity.getFileName());
+	        dto.setFilePath(entity.getFilePath());
+	        dto.setUploadedAt(entity.getUploadedAt());
+	       
+	        return dto;
+	    }
+
+	
 }

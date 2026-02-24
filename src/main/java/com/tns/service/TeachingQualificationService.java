@@ -1,71 +1,102 @@
 package com.tns.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.tns.dto.ApiResponse;
 import com.tns.dto.TeachingQualificationRequest;
 import com.tns.dto.TeachingQualificationResponse;
-import com.tns.model.Country;
-import com.tns.model.MasterLookup;
-import com.tns.model.TeacherProfile;
+import com.tns.model.LookupCategory;
 import com.tns.model.TeachingQualification;
-import com.tns.repository.CountryRepository;
-import com.tns.repository.MasterLookupRepository;
-import com.tns.repository.TeacherProfileRepository;
+import com.tns.repository.LookupCategoryRepository;
 import com.tns.repository.TeachingQualificationRepository;
 
 @Service
 public class TeachingQualificationService {
-    @Autowired private TeachingQualificationRepository repo;
-    @Autowired private TeacherProfileRepository teacherRepo;
-    @Autowired private MasterLookupRepository lookupRepo;
-    @Autowired private CountryRepository countryRepo;
 
-    public String saveOrUpdate(TeachingQualificationRequest req) {
-        TeachingQualification tq = (req.getTeachingQualificationId() != null)
-            ? repo.findById(req.getTeachingQualificationId()).orElse(new TeachingQualification())
-            : new TeachingQualification();
+    @Autowired
+    private TeachingQualificationRepository repository;
+    
+    @Autowired
+    private LookupCategoryRepository categoryRepo;
 
-        TeacherProfile teacher = teacherRepo.findById(req.getTeacherId())
-            .orElseThrow(() -> new RuntimeException("Teacher not found"));
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    
+   
 
-        MasterLookup certType = lookupRepo.findByLookupTypeAndLookupValue("CERTIFICATION_TYPE", req.getCertificationType())
-            .orElseThrow(() -> new RuntimeException("Invalid certification type"));
+    private String resolveLookupValue(String categoryKey,Long id) {
+        if (id == null) return null;
+        LookupCategory category = categoryRepo.findByCategoryKeyAndIsActiveTrue(categoryKey)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryKey));
 
-        Country country = countryRepo.findByCountryName(req.getCountryName())
-            .orElseThrow(() -> new RuntimeException("Invalid country"));
+        String sql = "SELECT " + category.getValueColumn() +
+                     " FROM " + category.getTableName() +
+                     " WHERE " + category.getIdColumn() + " = ? AND is_active = true";
 
-        tq.setTeacher(teacher);
-        tq.setQualificationName(req.getQualificationName());
-        tq.setCertificationType(certType);
-        tq.setInstitutionName(req.getInstitutionName());
-        tq.setCountry(country);
-        tq.setStartYear(req.getStartYear());
-        tq.setEndYear(req.getEndYear());
+        return jdbcTemplate.queryForObject(sql, String.class, id);
+    }
+    
 
-        repo.save(tq);
+    // Save or Update
+    public ApiResponse<TeachingQualificationResponse> saveOrUpdate(TeachingQualificationRequest request) {
+        Optional<TeachingQualification> existing = repository.findByUserId(request.getUserId())
+                .stream()
+                .filter(q -> q.getCertificationName().equalsIgnoreCase(request.getCertificationName()))
+                .findFirst();
 
-        return req.getTeachingQualificationId() != null
-                ? "Teaching qualification updated successfully"
-                : "Teaching qualification added successfully";
+        TeachingQualification entity;
+        String message;
 
+        if (existing.isPresent()) {
+            entity = existing.get();
+            message = "Teaching qualification updated successfully";
+        } else {
+            entity = new TeachingQualification();
+            entity.setUserId(request.getUserId());
+            message = "Teaching qualification created successfully";
+        }
+
+        entity.setCertificationName(request.getCertificationName());
+        entity.setCertificationTypeId(request.getCertificationTypeId());
+        entity.setInstitutionName(request.getInstitutionName());
+        entity.setCountryId(request.getCountryId());
+        entity.setYearOfPassing(request.getYearOfPassing());
+        entity.setCertificatePath(request.getCertificatePath());
+
+        TeachingQualification saved = repository.save(entity);
+        TeachingQualificationResponse response = mapToResponse(saved);
+
+        return new ApiResponse<>(200, message, response);
     }
 
-    public List<TeachingQualificationResponse> getAllByTeacher(Long teacherId) {
-        return repo.findByTeacher_TeacherId(teacherId).stream().map(this::map).toList();
+    // Get All by UserId
+    public List<TeachingQualificationResponse> getByUserId(Long userId) {
+        return repository.findByUserId(userId)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
-    private TeachingQualificationResponse map(TeachingQualification tq) {
-        TeachingQualificationResponse r = new TeachingQualificationResponse();
-        r.setTeachingQualificationId(tq.getTeachingQualificationId());
-        r.setQualificationName(tq.getQualificationName());
-        r.setCertificationTypeId(tq.getCertificationType()!=null?tq.getCertificationType().getLookupValue():null);
-        r.setInstitutionName(tq.getInstitutionName());
-        r.setCountryName(tq.getCountry()!=null?tq.getCountry().getCountryName():null);
-        r.setStartYear(tq.getStartYear());
-        r.setEndYear(tq.getEndYear());
-        return r;
+    private TeachingQualificationResponse mapToResponse(TeachingQualification entity) {
+        TeachingQualificationResponse dto = new TeachingQualificationResponse();
+        dto.setTeachingId(entity.getTeachingId());
+        dto.setUserId(entity.getUserId());
+       
+        dto.setInstitutionName(entity.getInstitutionName());
+        dto.setCertificationTypeId(entity.getCertificationTypeId());
+        dto.setCountryId(entity.getCountryId());
+        dto.setYearOfPassing(entity.getYearOfPassing());
+        
+        dto.setCertificationType(resolveLookupValue("certification_types",entity.getCertificationTypeId()));
+        dto.setCountryName(resolveLookupValue("countries",entity.getCountryId()));
+        
+        dto.setCertificatePath(entity.getCertificatePath());
+        dto.setCreatedAt(entity.getCreatedAt());
+        return dto;
     }
 }

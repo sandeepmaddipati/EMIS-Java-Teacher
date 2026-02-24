@@ -1,25 +1,38 @@
 package com.tns.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public class WorkExperienceResponse {
+
     private Long workId;
+    private Long userId;
     private String jobTitle;
     private String institutionName;
-    private String countryName;
-    private String stateName;
+    private Long regionId;
+    private String regionName;
+    private Long districtId;
     private String districtName;
-    private Integer startMonth;
-    private Integer startYear;
-    private Integer endMonth;
-    private Integer endYear;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Boolean currentlyWorking;
     private String referenceName;
     private String referencePhone;
     private String referenceEmail;
-    private String supportingDocument;
+    private String supportingDocumentPath;
+    private LocalDateTime createdAt;
+    private LocalDateTime lastUpdated;
 	public Long getWorkId() {
 		return workId;
 	}
 	public void setWorkId(Long workId) {
 		this.workId = workId;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 	public String getJobTitle() {
 		return jobTitle;
@@ -33,17 +46,23 @@ public class WorkExperienceResponse {
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-	public String getCountryName() {
-		return countryName;
+	public Long getRegionId() {
+		return regionId;
 	}
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
 	}
-	public String getStateName() {
-		return stateName;
+	public String getRegionName() {
+		return regionName;
 	}
-	public void setStateName(String stateName) {
-		this.stateName = stateName;
+	public void setRegionName(String regionName) {
+		this.regionName = regionName;
+	}
+	public Long getDistrictId() {
+		return districtId;
+	}
+	public void setDistrictId(Long districtId) {
+		this.districtId = districtId;
 	}
 	public String getDistrictName() {
 		return districtName;
@@ -51,29 +70,23 @@ public class WorkExperienceResponse {
 	public void setDistrictName(String districtName) {
 		this.districtName = districtName;
 	}
-	public Integer getStartMonth() {
-		return startMonth;
+	public LocalDate getStartDate() {
+		return startDate;
 	}
-	public void setStartMonth(Integer startMonth) {
-		this.startMonth = startMonth;
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
-	public Integer getStartYear() {
-		return startYear;
+	public LocalDate getEndDate() {
+		return endDate;
 	}
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
 	}
-	public Integer getEndMonth() {
-		return endMonth;
+	public Boolean getCurrentlyWorking() {
+		return currentlyWorking;
 	}
-	public void setEndMonth(Integer endMonth) {
-		this.endMonth = endMonth;
-	}
-	public Integer getEndYear() {
-		return endYear;
-	}
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
+	public void setCurrentlyWorking(Boolean currentlyWorking) {
+		this.currentlyWorking = currentlyWorking;
 	}
 	public String getReferenceName() {
 		return referenceName;
@@ -93,12 +106,27 @@ public class WorkExperienceResponse {
 	public void setReferenceEmail(String referenceEmail) {
 		this.referenceEmail = referenceEmail;
 	}
-	public String getSupportingDocument() {
-		return supportingDocument;
+	public String getSupportingDocumentPath() {
+		return supportingDocumentPath;
 	}
-	public void setSupportingDocument(String supportingDocument) {
-		this.supportingDocument = supportingDocument;
+	public void setSupportingDocumentPath(String supportingDocumentPath) {
+		this.supportingDocumentPath = supportingDocumentPath;
+	}
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+	public LocalDateTime getLastUpdated() {
+		return lastUpdated;
+	}
+	public void setLastUpdated(LocalDateTime lastUpdated) {
+		this.lastUpdated = lastUpdated;
 	}
     
     
-	}
+	
+	
+    
+}

@@ -1,53 +1,54 @@
 package com.tns.dto;
 
-import java.time.Year;
-
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class AcademicQualificationRequest {
-	
-	 private Long academicQualificationId;
 
-    @NotNull(message = "Teacher ID is required")
-    private Long teacherId;
+    @NotNull(message = "User ID is required")
+    private Long userId;
 
-    private String qualificationLevel;
+    @NotBlank(message = "Qualification title is required")
+    @Size(max = 255, message = "Qualification title must be less than 255 characters")
+    private String qualificationTitle;
+
+    @NotNull(message = "Qualification type is required")
+    private Long qualificationTypeId;
 
     @NotBlank(message = "Institution name is required")
+    @Size(max = 255, message = "Institution name must be less than 255 characters")
     private String institutionName;
 
-    @NotBlank(message = "Field of study is required")
-    private String fieldOfStudy;
+    @NotNull(message = "Country is required")
+    private Long countryId;
 
-    private String countryName;
+    private Integer yearOfPassing;
 
-    @NotNull(message = "Start year is required")
-    private Integer startYear;
+    private String certificatePath;
 
-    private Integer endYear;
-
-	public Long getAcademicQualificationId() {
-		return academicQualificationId;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setAcademicQualificationId(Long academicQualificationId) {
-		this.academicQualificationId = academicQualificationId;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public Long getTeacherId() {
-		return teacherId;
+	public String getQualificationTitle() {
+		return qualificationTitle;
 	}
 
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
+	public void setQualificationTitle(String qualificationTitle) {
+		this.qualificationTitle = qualificationTitle;
 	}
 
-	public String getQualificationLevel() {
-		return qualificationLevel;
+	public Long getQualificationTypeId() {
+		return qualificationTypeId;
 	}
 
-	public void setQualificationLevel(String qualificationLevel) {
-		this.qualificationLevel = qualificationLevel;
+	public void setQualificationTypeId(Long qualificationTypeId) {
+		this.qualificationTypeId = qualificationTypeId;
 	}
 
 	public String getInstitutionName() {
@@ -58,38 +59,31 @@ public class AcademicQualificationRequest {
 		this.institutionName = institutionName;
 	}
 
-	public String getFieldOfStudy() {
-		return fieldOfStudy;
+	public Long getCountryId() {
+		return countryId;
 	}
 
-	public void setFieldOfStudy(String fieldOfStudy) {
-		this.fieldOfStudy = fieldOfStudy;
+	public void setCountryId(Long countryId) {
+		this.countryId = countryId;
 	}
 
-	public String getCountryName() {
-		return countryName;
+	public Integer getYearOfPassing() {
+		return yearOfPassing;
 	}
 
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
+	public void setYearOfPassing(Integer yearOfPassing) {
+		this.yearOfPassing = yearOfPassing;
 	}
 
-	public Integer getStartYear() {
-		return startYear;
+	public String getCertificatePath() {
+		return certificatePath;
 	}
 
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
+	public void setCertificatePath(String certificatePath) {
+		this.certificatePath = certificatePath;
 	}
 
-	public Integer getEndYear() {
-		return endYear;
-	}
-
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
-	}
-
+	
     
     
 }

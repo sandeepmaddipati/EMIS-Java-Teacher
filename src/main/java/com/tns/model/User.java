@@ -1,10 +1,10 @@
 package com.tns.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.hibernate.annotations.CreationTimestamp;
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +15,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-
 public class User {
 
     @Id
@@ -23,24 +22,27 @@ public class User {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
+
+    private String phone;
 
     @Column(nullable = false)
     private String password;
-    
+
     @Column(name = "is_active")
     private Boolean isActive = true;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserRole> userRoles = new HashSet<>();
 
-    @OneToMany(mappedBy = "user")
-    private List<UserRole> userRoles;
+    public User() {}
 
 	public Long getUserId() {
 		return userId;
@@ -64,6 +66,14 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getPassword() {
@@ -90,15 +100,5 @@ public class User {
 		this.createdAt = createdAt;
 	}
 
-	public List<UserRole> getUserRoles() {
-		return userRoles;
-	}
-
-	public void setUserRoles(List<UserRole> userRoles) {
-		this.userRoles = userRoles;
-	}
-    
+ 
 }
-
-
-	

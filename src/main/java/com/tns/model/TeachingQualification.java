@@ -1,75 +1,79 @@
 package com.tns.model;
 
 import java.time.LocalDateTime;
-import java.time.Year;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "teaching_qualifications")
 public class TeachingQualification {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long teachingQualificationId;
+    private Long teachingId;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private TeacherProfile teacher;
+    @Column(name="user_id",nullable = false)
+    private Long userId;
 
-    private String qualificationName;
+    @Column(name="certification_name",nullable = false, length = 255)
+    private String certificationName;
 
-    @ManyToOne
-    @JoinColumn(name = "certification_type_id")
-    private MasterLookup certificationType;
+    @Column(name="certification_type_id",nullable = false)
+    private Long certificationTypeId;   // from lookup_values
 
+    @Column(name="institution_name",nullable = false, length = 255)
     private String institutionName;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @Column(name="country_id",nullable = false)
+    private Long countryId;             // from lookup_values
 
-    private Integer startYear;
-    private Integer endYear;
+    @Column(name="year_of_passing",nullable = false)
+    private Integer yearOfPassing;               
 
+    @Column(name="certificate_path",length = 500)
+    private String certificatePath;
+
+    @Column(name="created_at",updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 
-	public Long getTeachingQualificationId() {
-		return teachingQualificationId;
+	public Long getTeachingId() {
+		return teachingId;
 	}
 
-	public void setTeachingQualificationId(Long teachingQualificationId) {
-		this.teachingQualificationId = teachingQualificationId;
+	public void setTeachingId(Long teachingId) {
+		this.teachingId = teachingId;
 	}
 
-	public TeacherProfile getTeacher() {
-		return teacher;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setTeacher(TeacherProfile teacher) {
-		this.teacher = teacher;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public String getQualificationName() {
-		return qualificationName;
+	public String getCertificationName() {
+		return certificationName;
 	}
 
-	public void setQualificationName(String qualificationName) {
-		this.qualificationName = qualificationName;
+	public void setCertificationName(String certificationName) {
+		this.certificationName = certificationName;
 	}
 
-	public MasterLookup getCertificationType() {
-		return certificationType;
+	public Long getCertificationTypeId() {
+		return certificationTypeId;
 	}
 
-	public void setCertificationType(MasterLookup certificationType) {
-		this.certificationType = certificationType;
+	public void setCertificationTypeId(Long certificationTypeId) {
+		this.certificationTypeId = certificationTypeId;
 	}
 
 	public String getInstitutionName() {
@@ -80,28 +84,28 @@ public class TeachingQualification {
 		this.institutionName = institutionName;
 	}
 
-	public Country getCountry() {
-		return country;
+	public Long getCountryId() {
+		return countryId;
 	}
 
-	public void setCountry(Country country) {
-		this.country = country;
+	public void setCountryId(Long countryId) {
+		this.countryId = countryId;
 	}
 
-	public Integer getStartYear() {
-		return startYear;
+	public Integer getYearOfPassing() {
+		return yearOfPassing;
 	}
 
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
+	public void setYearOfPassing(Integer yearOfPassing) {
+		this.yearOfPassing = yearOfPassing;
 	}
 
-	public Integer getEndYear() {
-		return endYear;
+	public String getCertificatePath() {
+		return certificatePath;
 	}
 
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
+	public void setCertificatePath(String certificatePath) {
+		this.certificatePath = certificatePath;
 	}
 
 	public LocalDateTime getCreatedAt() {
@@ -111,6 +115,16 @@ public class TeachingQualification {
 	public void setCreatedAt(LocalDateTime createdAt) {
 		this.createdAt = createdAt;
 	}
+
+	public LocalDateTime getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(LocalDateTime lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+
     
-    
+
 }

@@ -1,120 +1,108 @@
 package com.tns.dto;
 
+import java.time.LocalDate;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Max;
 
-public class WorkExperienceRequest {
-    private Long workId;
-    private Long teacherId;
+public class WorkExperienceRequest{
+	
 
-    @NotBlank private String jobTitle;
-    @NotBlank private String institutionName;
-    @NotBlank private String countryName;
-    @NotBlank private String stateName;
-    @NotBlank private String districtName;
+	    @NotNull(message = "User ID is required")
+	    private Long userId;
 
-    @NotNull private Integer startMonth;
-    @NotNull private Integer startYear;
-    private Integer endMonth;
-    private Integer endYear;
+	    @NotBlank(message = "Job title is required")
+	    @Size(max = 150)
+	    private String jobTitle;
 
-    private String referenceName;     // optional
-    private String referencePhone;    // optional
-    private String referenceEmail;    // optional
-    private String supportingDocument;// optional
-	public Long getWorkId() {
-		return workId;
-	}
-	public void setWorkId(Long workId) {
-		this.workId = workId;
-	}
-	public Long getTeacherId() {
-		return teacherId;
-	}
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
-	}
-	public String getJobTitle() {
-		return jobTitle;
-	}
-	public void setJobTitle(String jobTitle) {
-		this.jobTitle = jobTitle;
-	}
-	public String getInstitutionName() {
-		return institutionName;
-	}
-	public void setInstitutionName(String institutionName) {
-		this.institutionName = institutionName;
-	}
-	public String getCountryName() {
-		return countryName;
-	}
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
-	}
-	public String getStateName() {
-		return stateName;
-	}
-	public void setStateName(String stateName) {
-		this.stateName = stateName;
-	}
-	public String getDistrictName() {
-		return districtName;
-	}
-	public void setDistrictName(String districtName) {
-		this.districtName = districtName;
-	}
-	public Integer getStartMonth() {
-		return startMonth;
-	}
-	public void setStartMonth(Integer startMonth) {
-		this.startMonth = startMonth;
-	}
-	public Integer getStartYear() {
-		return startYear;
-	}
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
-	}
-	public Integer getEndMonth() {
-		return endMonth;
-	}
-	public void setEndMonth(Integer endMonth) {
-		this.endMonth = endMonth;
-	}
-	public Integer getEndYear() {
-		return endYear;
-	}
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
-	}
-	public String getReferenceName() {
-		return referenceName;
-	}
-	public void setReferenceName(String referenceName) {
-		this.referenceName = referenceName;
-	}
-	public String getReferencePhone() {
-		return referencePhone;
-	}
-	public void setReferencePhone(String referencePhone) {
-		this.referencePhone = referencePhone;
-	}
-	public String getReferenceEmail() {
-		return referenceEmail;
-	}
-	public void setReferenceEmail(String referenceEmail) {
-		this.referenceEmail = referenceEmail;
-	}
-	public String getSupportingDocument() {
-		return supportingDocument;
-	}
-	public void setSupportingDocument(String supportingDocument) {
-		this.supportingDocument = supportingDocument;
+	    @NotBlank(message = "Institution name is required")
+	    @Size(max = 200)
+	    private String institutionName;
+
+	    @NotNull(message = "Region is required")
+	    private Long regionId;
+
+	    @NotNull(message = "District is required")
+	    private Long districtId;
+
+	    @NotNull(message = "Start Date is required")
+	    private LocalDate startDate;
+	    
+	    private LocalDate endDate;
+	  
+	    private String referenceName;
+	    private String referencePhone;
+	    private String referenceEmail;
+	    private String supportingDocumentPath;
+		public Long getUserId() {
+			return userId;
+		}
+		public void setUserId(Long userId) {
+			this.userId = userId;
+		}
+		public String getJobTitle() {
+			return jobTitle;
+		}
+		public void setJobTitle(String jobTitle) {
+			this.jobTitle = jobTitle;
+		}
+		public String getInstitutionName() {
+			return institutionName;
+		}
+		public void setInstitutionName(String institutionName) {
+			this.institutionName = institutionName;
+		}
+		public Long getRegionId() {
+			return regionId;
+		}
+		public void setRegionId(Long regionId) {
+			this.regionId = regionId;
+		}
+		public Long getDistrictId() {
+			return districtId;
+		}
+		public void setDistrictId(Long districtId) {
+			this.districtId = districtId;
+		}
+		public LocalDate getStartDate() {
+			return startDate;
+		}
+		public void setStartDate(LocalDate startDate) {
+			this.startDate = startDate;
+		}
+		public LocalDate getEndDate() {
+			return endDate;
+		}
+		public void setEndDate(LocalDate endDate) {
+			this.endDate = endDate;
+		}
+		
+		public String getReferenceName() {
+			return referenceName;
+		}
+		public void setReferenceName(String referenceName) {
+			this.referenceName = referenceName;
+		}
+		public String getReferencePhone() {
+			return referencePhone;
+		}
+		public void setReferencePhone(String referencePhone) {
+			this.referencePhone = referencePhone;
+		}
+		public String getReferenceEmail() {
+			return referenceEmail;
+		}
+		public void setReferenceEmail(String referenceEmail) {
+			this.referenceEmail = referenceEmail;
+		}
+		public String getSupportingDocumentPath() {
+			return supportingDocumentPath;
+		}
+		public void setSupportingDocumentPath(String supportingDocumentPath) {
+			this.supportingDocumentPath = supportingDocumentPath;
+		}
+	    
+		
 	}
 
-    
-}

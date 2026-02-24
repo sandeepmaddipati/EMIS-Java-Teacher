@@ -1,140 +1,189 @@
 package com.tns.model;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "work_experiences")
 public class WorkExperience {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="work_id")
     private Long workId;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private TeacherProfile teacher;
+    @Column(name="user_id",nullable = false)
+    private Long userId;
 
+    @Column(name="job_title",nullable = false, length = 150)
     private String jobTitle;
+
+    @Column(name="institution_name",nullable = false, length = 200)
     private String institutionName;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private Country country;
+    @Column(name="region_id",nullable = false)
+    private Long regionId;      // from lookup_values
 
-    @ManyToOne
-    @JoinColumn(name = "state_id")
-    private State state;
+    @Column(name="district_id",nullable = false)
+    private Long districtId;    // from lookup_values
 
-    @ManyToOne
-    @JoinColumn(name = "district_id")
-    private District district;
+   
+    @Column(name="start_date",nullable = false)
+    private LocalDate startDate;   
 
-    private Integer startMonth;
-    private Integer startYear;
-    private Integer endMonth;
-    private Integer endYear;
+    @Column(name="end_date")
+    private LocalDate endDate;   
 
+
+
+    @Column(name="currently_working",nullable = false)
+    private Boolean currentlyWorking = false;
+
+    @Column(name="reference_name",length = 150)
     private String referenceName;
+    @Column(length = 10)
     private String referencePhone;
+
+ 
+    @Column(name="reference_email",length = 150)
     private String referenceEmail;
-    private String supportingDocument;
+
+    @Column(name="supporting_document_path",length = 500)
+    private String supportingDocumentPath;
+
+    @Column(name="created_at",updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated = LocalDateTime.now();
+
 	public Long getWorkId() {
 		return workId;
 	}
+
 	public void setWorkId(Long workId) {
 		this.workId = workId;
 	}
-	public TeacherProfile getTeacher() {
-		return teacher;
+
+	public Long getUserId() {
+		return userId;
 	}
-	public void setTeacher(TeacherProfile teacher) {
-		this.teacher = teacher;
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
+
 	public String getJobTitle() {
 		return jobTitle;
 	}
+
 	public void setJobTitle(String jobTitle) {
 		this.jobTitle = jobTitle;
 	}
+
 	public String getInstitutionName() {
 		return institutionName;
 	}
+
 	public void setInstitutionName(String institutionName) {
 		this.institutionName = institutionName;
 	}
-	public Country getCountry() {
-		return country;
+
+	public Long getRegionId() {
+		return regionId;
 	}
-	public void setCountry(Country country) {
-		this.country = country;
+
+	public void setRegionId(Long regionId) {
+		this.regionId = regionId;
 	}
-	public State getState() {
-		return state;
+
+	public Long getDistrictId() {
+		return districtId;
 	}
-	public void setState(State state) {
-		this.state = state;
+
+	public void setDistrictId(Long districtId) {
+		this.districtId = districtId;
 	}
-	public District getDistrict() {
-		return district;
+
+	public LocalDate getStartDate() {
+		return startDate;
 	}
-	public void setDistrict(District district) {
-		this.district = district;
+
+	public void setStartDate(LocalDate startDate) {
+		this.startDate = startDate;
 	}
-	public Integer getStartMonth() {
-		return startMonth;
+
+	public LocalDate getEndDate() {
+		return endDate;
 	}
-	public void setStartMonth(Integer startMonth) {
-		this.startMonth = startMonth;
+
+	public void setEndDate(LocalDate endDate) {
+		this.endDate = endDate;
 	}
-	public Integer getStartYear() {
-		return startYear;
+
+	public Boolean getCurrentlyWorking() {
+		return currentlyWorking;
 	}
-	public void setStartYear(Integer startYear) {
-		this.startYear = startYear;
+
+	public void setCurrentlyWorking(Boolean currentlyWorking) {
+		this.currentlyWorking = currentlyWorking;
 	}
-	public Integer getEndMonth() {
-		return endMonth;
-	}
-	public void setEndMonth(Integer endMonth) {
-		this.endMonth = endMonth;
-	}
-	public Integer getEndYear() {
-		return endYear;
-	}
-	public void setEndYear(Integer endYear) {
-		this.endYear = endYear;
-	}
+
 	public String getReferenceName() {
 		return referenceName;
 	}
+
 	public void setReferenceName(String referenceName) {
 		this.referenceName = referenceName;
 	}
+
 	public String getReferencePhone() {
 		return referencePhone;
 	}
+
 	public void setReferencePhone(String referencePhone) {
 		this.referencePhone = referencePhone;
 	}
+
 	public String getReferenceEmail() {
 		return referenceEmail;
 	}
+
 	public void setReferenceEmail(String referenceEmail) {
 		this.referenceEmail = referenceEmail;
 	}
-	public String getSupportingDocument() {
-		return supportingDocument;
-	}
-	public void setSupportingDocument(String supportingDocument) {
-		this.supportingDocument = supportingDocument;
+
+	public String getSupportingDocumentPath() {
+		return supportingDocumentPath;
 	}
 
+	public void setSupportingDocumentPath(String supportingDocumentPath) {
+		this.supportingDocumentPath = supportingDocumentPath;
+	}
 
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
 
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public LocalDateTime getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(LocalDateTime lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+	
+	
 }

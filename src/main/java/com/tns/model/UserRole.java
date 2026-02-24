@@ -1,35 +1,25 @@
-package com.tns.model;
+	package com.tns.model;
 
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
+import jakarta.persistence.*;
 
 @Entity
-@Table(name="user_roles")
-
+@Table(name = "user_roles")
 public class UserRole {
 
-	
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name="user_role_id")
-     private Long userRoleId;
-	
-	@ManyToOne
-	@JoinColumn(name="user_id")
-	private User user;
-	
-	@ManyToOne
-	@JoinColumn(name="role_id")
-	private Role role;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_role_id")
+    private Long userRoleId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
+
+    public UserRole() {}
 
 	public Long getUserRoleId() {
 		return userRoleId;
@@ -55,5 +45,5 @@ public class UserRole {
 		this.role = role;
 	}
 
-	
+    // getters & setters
 }

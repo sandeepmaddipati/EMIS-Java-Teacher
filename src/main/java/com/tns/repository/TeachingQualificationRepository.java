@@ -7,11 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.tns.model.TeachingQualification;
 @Repository
-public interface TeachingQualificationRepository
-        extends JpaRepository<TeachingQualification, Long> {
-
-  
-	List<TeachingQualification> findByTeacher_TeacherId(Long teacherId);
-
-	
+public interface TeachingQualificationRepository extends JpaRepository<TeachingQualification, Long> {
+    List<TeachingQualification> findByUserId(Long userId);
 }

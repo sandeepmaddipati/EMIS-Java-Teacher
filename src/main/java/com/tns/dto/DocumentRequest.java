@@ -5,44 +5,35 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class DocumentRequest {
-    private Long documentId;   // for update
 
-    @NotNull(message = "Teacher ID is required")
-    private Long teacherId;
+    @NotNull(message = "User ID is required")
+    private Long userId;
 
-    @NotNull(message = "Document type ID is required")
-    private String documentType;
+    @NotNull(message = "Document type is required")
+    private Long documentTypeId;
 
     @NotBlank(message = "File name is required")
-    @Size(max = 255, message = "File name must not exceed 255 characters")
+    @Size(max = 255)
     private String fileName;
 
     @NotBlank(message = "File path is required")
-    @Size(max = 500, message = "File path must not exceed 500 characters")
+    @Size(max = 500)
     private String filePath;
 
-	public Long getDocumentId() {
-		return documentId;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setDocumentId(Long documentId) {
-		this.documentId = documentId;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public Long getTeacherId() {
-		return teacherId;
+	public Long getDocumentTypeId() {
+		return documentTypeId;
 	}
 
-	public void setTeacherId(Long teacherId) {
-		this.teacherId = teacherId;
-	}
-
-	public String getDocumentType() {
-		return documentType;
-	}
-
-	public void setDocumentType(String documentType) {
-		this.documentType = documentType;
+	public void setDocumentTypeId(Long documentTypeId) {
+		this.documentTypeId = documentTypeId;
 	}
 
 	public String getFileName() {
@@ -60,7 +51,6 @@ public class DocumentRequest {
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
 	}
-
-	
-  
+    
+    
 }

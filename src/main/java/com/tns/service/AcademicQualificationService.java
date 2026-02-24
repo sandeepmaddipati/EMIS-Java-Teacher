@@ -1,76 +1,114 @@
 package com.tns.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.tns.dto.AcademicQualificationRequest;
 import com.tns.dto.AcademicQualificationResponse;
+import com.tns.dto.ApiResponse;
 import com.tns.model.AcademicQualification;
-import com.tns.model.Country;
-import com.tns.model.MasterLookup;
-import com.tns.model.TeacherProfile;
+import com.tns.model.LookupCategory;
 import com.tns.repository.AcademicQualificationRepository;
-import com.tns.repository.CountryRepository;
-import com.tns.repository.MasterLookupRepository;
-import com.tns.repository.TeacherProfileRepository;
+import com.tns.repository.LookupCategoryRepository;
+
 
 @Service
 public class AcademicQualificationService {
-    @Autowired private AcademicQualificationRepository repo;
-    @Autowired private TeacherProfileRepository teacherRepo;
-    @Autowired private MasterLookupRepository lookupRepo;
-    @Autowired private CountryRepository countryRepo;
 
-    public String saveOrUpdate(AcademicQualificationRequest req) {
-        AcademicQualification aq = (req.getAcademicQualificationId() != null)
-            ? repo.findById(req.getAcademicQualificationId()).orElse(new AcademicQualification())
-            : new AcademicQualification();
+    @Autowired
+    private AcademicQualificationRepository repository;
+    
+    @Autowired
+    private LookupCategoryRepository categoryRepo;
 
-        TeacherProfile teacher = teacherRepo.findById(req.getTeacherId())
-        	    .orElseThrow(() -> new RuntimeException("Teacher not found"));
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    
 
-        	MasterLookup level = lookupRepo.findByLookupTypeAndLookupValue("QUALIFICATION_LEVEL", req.getQualificationLevel())
-        	    .orElseThrow(() -> new RuntimeException("Invalid qualification level"));
+    
+    private String resolveLookupValue(String categoryKey, Long id) {
+        if (id == null) return null;
 
-        	Country country = countryRepo.findByCountryName(req.getCountryName())
-        	    .orElseThrow(() -> new RuntimeException("Invalid country"));
+        LookupCategory category = categoryRepo.findByCategoryKeyAndIsActiveTrue(categoryKey)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryKey));
 
-        	aq.setTeacher(teacher);          // ✅ TeacherProfile
-        	aq.setQualificationLevel(level); // ✅ MasterLookup
-        	aq.setInstitutionName(req.getInstitutionName());
-        	aq.setFieldOfStudy(req.getFieldOfStudy());
-        	aq.setCountry(country);          // ✅ Country
-        	aq.setStartYear(req.getStartYear());
-        	aq.setEndYear(req.getEndYear());
+        String sql = "SELECT " + category.getValueColumn() +
+                     " FROM " + category.getTableName() +
+                     " WHERE " + category.getIdColumn() + " = ? AND is_active = true";
 
-
-        	 repo.save(aq);
-
-             return req.getAcademicQualificationId() != null
-                     ? "Academic qualification updated successfully"
-                     : "Academic qualification added successfully";
-
-    }
-    public List<AcademicQualificationResponse> getAllByTeacher(Long teacherId) {
-        return repo.findByTeacher_TeacherId(teacherId)
-                   .stream()
-                   .map(this::map)
-                   .toList();
+        return jdbcTemplate.queryForObject(sql, String.class, id);
     }
 
-    private AcademicQualificationResponse map(AcademicQualification aq) {
-        AcademicQualificationResponse r = new AcademicQualificationResponse();
-        r.setAcademicQualificationId(aq.getAcademicQualificationId());
-        r.setQualificationLevel(aq.getQualificationLevel()!=null?aq.getQualificationLevel().getLookupValue():null);
-        r.setInstitutionName(aq.getInstitutionName());
-        r.setFieldOfStudy(aq.getFieldOfStudy());
-        r.setCountry(aq.getCountry()!=null?aq.getCountry().getCountryName():null);
-        r.setStartYear(aq.getStartYear());
-        r.setEndYear(aq.getEndYear());
-        return r;
+    public ApiResponse<AcademicQualificationResponse> saveOrUpdate(AcademicQualificationRequest request) {
+        // Check if qualification already exists for this user
+        Optional<AcademicQualification> existing = repository.findByUserId(request.getUserId())
+                .stream()
+                .filter(q -> q.getQualificationTitle().equalsIgnoreCase(request.getQualificationTitle()))
+                .findFirst();
+
+        AcademicQualification entity;
+        String message;
+
+        if (existing.isPresent()) {
+            // Update existing record
+            entity = existing.get();
+            message = "Academic qualification updated successfully";
+        } else {
+            // Create new record
+            entity = new AcademicQualification();
+            entity.setUserId(request.getUserId());
+            message = "Academic qualification created successfully";
+        }
+
+        // Common field mapping
+        entity.setQualificationTitle(request.getQualificationTitle());
+        entity.setQualificationTypeId(request.getQualificationTypeId());
+        entity.setInstitutionName(request.getInstitutionName());
+        entity.setCountryId(request.getCountryId());
+        entity.setYearOfPassing(request.getYearOfPassing());
+        entity.setCertificatePath(request.getCertificatePath());
+
+        AcademicQualification saved = repository.save(entity);
+        AcademicQualificationResponse response = mapToResponse(saved);
+
+        return new ApiResponse<>(200, message, response);
     }
 
-	
+    public List<AcademicQualificationResponse> getByUserId(Long userId) {
+        return repository.findByUserId(userId)
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    private AcademicQualificationResponse mapToResponse(AcademicQualification entity) {
+        AcademicQualificationResponse dto = new AcademicQualificationResponse();
+        dto.setAcademicId(entity.getAcademicId());
+        dto.setUserId(entity.getUserId());
+        dto.setQualificationTitle(entity.getQualificationTitle());
+        dto.setInstitutionName(entity.getInstitutionName());
+        
+        dto.setQualificationTypeId(entity.getQualificationTypeId());
+        dto.setCountryId(entity.getCountryId());
+        dto.setYearOfPassing(entity.getYearOfPassing());
+        
+        //Name
+        
+     // Names resolved via lookup
+        dto.setQualificationType(resolveLookupValue("qualification_types", entity.getQualificationTypeId()));
+        dto.setCountryName(resolveLookupValue("countries", entity.getCountryId()));
+        
+
+
+
+        dto.setCertificatePath(entity.getCertificatePath());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setLastUpdated(entity.getLastUpdated());
+
+        return dto;
+    }
 }

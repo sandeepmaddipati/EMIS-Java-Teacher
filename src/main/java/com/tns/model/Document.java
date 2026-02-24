@@ -1,27 +1,40 @@
 package com.tns.model;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "documents")
 public class Document {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="document_id")
     private Long documentId;
 
-    @ManyToOne
-    @JoinColumn(name = "teacher_id", nullable = false)
-    private TeacherProfile teacher;
+    @Column(name="user_id",nullable = false)
+    private Long userId;
 
-    @ManyToOne
-    @JoinColumn(name = "document_type_id")
-    private MasterLookup documentType;
+    @Column(name="document_type_id",nullable = false)
+    private Long documentTypeId;   // from lookup_values
 
+    @Column(name="file_name",nullable = false, length = 255)
     private String fileName;
+
+    @Column(name="file_path",nullable = false, length = 500)
     private String filePath;
 
+    @Column(name="uploaded_at",updatable = false)
     private LocalDateTime uploadedAt = LocalDateTime.now();
+
+    @Column(name = "last_updated")
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 
 	public Long getDocumentId() {
 		return documentId;
@@ -31,20 +44,20 @@ public class Document {
 		this.documentId = documentId;
 	}
 
-	public TeacherProfile getTeacher() {
-		return teacher;
+	public Long getUserId() {
+		return userId;
 	}
 
-	public void setTeacher(TeacherProfile teacher) {
-		this.teacher = teacher;
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
-	public MasterLookup getDocumentType() {
-		return documentType;
+	public Long getDocumentTypeId() {
+		return documentTypeId;
 	}
 
-	public void setDocumentType(MasterLookup documentType) {
-		this.documentType = documentType;
+	public void setDocumentTypeId(Long documentTypeId) {
+		this.documentTypeId = documentTypeId;
 	}
 
 	public String getFileName() {
@@ -71,4 +84,14 @@ public class Document {
 		this.uploadedAt = uploadedAt;
 	}
 
+	public LocalDateTime getLastUpdated() {
+		return lastUpdated;
+	}
+
+	public void setLastUpdated(LocalDateTime lastUpdated) {
+		this.lastUpdated = lastUpdated;
+	}
+
+    
+    
 }
