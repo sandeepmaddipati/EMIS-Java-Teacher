@@ -42,5 +42,5 @@ public class AuthController {
     public ApiResponse<List<UserResponse>> getAllUsers() {
         return authService.getAllUsersWithRoles();
     }
-
+    
 }
