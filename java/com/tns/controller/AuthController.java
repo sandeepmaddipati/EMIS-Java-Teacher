@@ -1,7 +1,10 @@
 package com.tns.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,4 +37,10 @@ public class AuthController {
         return ResponseEntity.ok(
                 new ApiResponse<>(200, "Login Successful", user));
     }
+    
+    @GetMapping("/users")
+    public ApiResponse<List<UserResponse>> getAllUsers() {
+        return authService.getAllUsersWithRoles();
+    }
+
 }

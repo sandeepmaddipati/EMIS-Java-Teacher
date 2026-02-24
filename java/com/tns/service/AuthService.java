@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tns.dto.ApiResponse;
 import com.tns.dto.LoginRequest;
 import com.tns.dto.RegisterRequest;
 import com.tns.dto.UserResponse;
@@ -88,4 +89,28 @@ public class AuthService {
 
         return response;
     }
+    
+    public ApiResponse<List<UserResponse>> getAllUsersWithRoles() {
+        List<User> users = userRepository.findAll();
+
+        List<UserResponse> responses = users.stream().map(user -> {
+            List<String> roles = userRoleRepository.findByUser_UserId(user.getUserId())
+                    .stream()
+                    .map(ur -> ur.getRole().getRoleName())
+                    .toList();
+
+            UserResponse response = new UserResponse();
+            response.setUserId(user.getUserId());
+            response.setUsername(user.getUsername());
+            response.setEmail(user.getEmail());
+            response.setPhone(user.getPhone());
+            response.setIsActive(user.getIsActive());
+            response.setRoles(roles);
+
+            return response;
+        }).toList();
+
+        return new ApiResponse<>(200, "Fetched all users successfully", responses);
+    }
+
 }
