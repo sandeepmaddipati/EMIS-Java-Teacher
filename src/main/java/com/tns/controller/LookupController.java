@@ -1,9 +1,11 @@
 package com.tns.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +21,8 @@ import com.tns.service.LookupService;
 public class LookupController {
 @Autowired
     private  LookupService lookupService;
-
+@Autowired
+private JdbcTemplate jdbcTemplate;
 
 @GetMapping
 public ResponseEntity<ApiResponse<List<LookupMaster>>> getAllCategories() {
@@ -53,4 +56,10 @@ public List<LookupValueResponse> getSubjectsByType(@PathVariable Long typeId) {
     return lookupService.getSubjectsByType(typeId);
 }
 
+
+
+@GetMapping("/test-db")
+public List<Map<String,Object>> testDb() {
+    return jdbcTemplate.queryForList("SELECT * FROM lookup_categories");
+}
 }
