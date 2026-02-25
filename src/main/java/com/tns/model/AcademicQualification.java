@@ -146,8 +146,5 @@ public class AcademicQualification {
 		this.lastUpdated = lastUpdated;
 	}
 
-
-
-
     
 }
