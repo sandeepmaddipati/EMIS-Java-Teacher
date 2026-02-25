@@ -12,6 +12,7 @@ import com.tns.dto.AcademicQualificationResponse;
 import com.tns.dto.ApiResponse;
 import com.tns.model.AcademicQualification;
 import com.tns.model.LookupCategory;
+import com.tns.model.User;
 import com.tns.repository.AcademicQualificationRepository;
 import com.tns.repository.LookupCategoryRepository;
 
@@ -45,7 +46,7 @@ public class AcademicQualificationService {
 
     public ApiResponse<AcademicQualificationResponse> saveOrUpdate(AcademicQualificationRequest request) {
         // Check if qualification already exists for this user
-        Optional<AcademicQualification> existing = repository.findByUserId(request.getUserId())
+        Optional<AcademicQualification> existing = repository.findByUser_UserId(request.getUserId())
                 .stream()
                 .filter(q -> q.getQualificationTitle().equalsIgnoreCase(request.getQualificationTitle()))
                 .findFirst();
@@ -60,7 +61,9 @@ public class AcademicQualificationService {
         } else {
             // Create new record
             entity = new AcademicQualification();
-            entity.setUserId(request.getUserId());
+            User user=new User();
+            user.setUserId(request.getUserId());
+            entity.setUser(user);
             message = "Academic qualification created successfully";
         }
 
@@ -79,7 +82,7 @@ public class AcademicQualificationService {
     }
 
     public List<AcademicQualificationResponse> getByUserId(Long userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUser_UserId(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -88,7 +91,7 @@ public class AcademicQualificationService {
     private AcademicQualificationResponse mapToResponse(AcademicQualification entity) {
         AcademicQualificationResponse dto = new AcademicQualificationResponse();
         dto.setAcademicId(entity.getAcademicId());
-        dto.setUserId(entity.getUserId());
+        dto.setUserId(entity.getUser().getUserId());
         dto.setQualificationTitle(entity.getQualificationTitle());
         dto.setInstitutionName(entity.getInstitutionName());
         

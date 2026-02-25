@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,8 +19,10 @@ public class TeachingQualification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long teachingId;
 
-    @Column(name="user_id",nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 
     @Column(name="certification_name",nullable = false, length = 255)
     private String certificationName;
@@ -52,12 +56,12 @@ public class TeachingQualification {
 		this.teachingId = teachingId;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public String getCertificationName() {
@@ -124,6 +128,7 @@ public class TeachingQualification {
 		this.lastUpdated = lastUpdated;
 	}
 
+    
 
     
 

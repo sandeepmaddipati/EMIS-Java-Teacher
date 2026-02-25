@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,8 +20,10 @@ public class AcademicQualification {
     @Column(name="academic_id")
     private Long academicId;
 
-    @Column(name="user_id",nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 
     @Column(name="qualification_title",nullable = false, length = 255)
     private String qualificationTitle;
@@ -57,13 +61,13 @@ public class AcademicQualification {
 	}
 
 
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 
@@ -145,6 +149,7 @@ public class AcademicQualification {
 	public void setLastUpdated(LocalDateTime lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
+
 
     
 }

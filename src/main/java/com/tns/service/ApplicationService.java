@@ -13,6 +13,7 @@ import com.tns.dto.ApplicationRequest;
 import com.tns.dto.ApplicationResponse;
 import com.tns.model.Application;
 import com.tns.model.LookupCategory;
+import com.tns.model.User;
 import com.tns.repository.AcademicQualificationRepository;
 import com.tns.repository.ApplicationRepository;
 import com.tns.repository.DocumentRepository;
@@ -50,16 +51,20 @@ public class ApplicationService {
     }
 	
     public ApiResponse<ApplicationResponse> submitApplication(ApplicationRequest request) {
-        boolean personalInfoExists = personalRepo.findByUserId(request.getUserId()).isPresent();
-        boolean academicExists = !academicRepo.findByUserId(request.getUserId()).isEmpty();
-        boolean teachingExists = !teachingRepo.findByUserId(request.getUserId()).isEmpty();
-        boolean workExists = !workRepo.findByUserId(request.getUserId()).isEmpty();
-        boolean documentsExist = !documentRepo.findByUserId(request.getUserId()).isEmpty();
+        boolean personalInfoExists = personalRepo.findByUser_UserId(request.getUserId()).isPresent();
+        boolean academicExists = !academicRepo.findByUser_UserId(request.getUserId()).isEmpty();
+        boolean teachingExists = !teachingRepo.findByUser_UserId(request.getUserId()).isEmpty();
+        boolean workExists = !workRepo.findByUser_UserId(request.getUserId()).isEmpty();
+        boolean documentsExist = !documentRepo.findByuser_UserId(request.getUserId()).isEmpty();
 
         Application entity = repository.findByApplicationCode(request.getApplicationCode())
                 .orElse(new Application());
 
-        entity.setUserId(request.getUserId());
+     // ✅ Map User relationship
+        User user = new User();
+        user.setUserId(request.getUserId());
+        entity.setUser(user);
+
         entity.setApplicationCode(request.getApplicationCode());
         entity.setRegionId(request.getRegionId());
         entity.setRemarks(request.getRemarks());
@@ -87,7 +92,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationResponse> getSubmittedApplications(Long userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUser_UserId(userId)
                 .stream()
                 .filter(app -> app.getApplicationStatusId() != 1L) // exclude drafts
                 .map(this::mapToResponse)
@@ -95,7 +100,7 @@ public class ApplicationService {
     }
 
     public List<ApplicationResponse> getAllApplications(Long userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUser_UserId(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -104,7 +109,7 @@ public class ApplicationService {
     private ApplicationResponse mapToResponse(Application entity) {
         ApplicationResponse dto = new ApplicationResponse();
         dto.setApplicationId(entity.getApplicationId());
-        dto.setUserId(entity.getUserId());
+        dto.setUserId(entity.getUser().getUserId());
         dto.setApplicationCode(entity.getApplicationCode());
         dto.setRegionId(entity.getRegionId());
         dto.setApplicationStatusId(entity.getApplicationStatusId());

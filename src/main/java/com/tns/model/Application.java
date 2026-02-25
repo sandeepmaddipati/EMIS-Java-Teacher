@@ -8,6 +8,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,9 +20,11 @@ public class Application {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "application_id")
     private Long applicationId;
+    
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
 
     @Column(name = "application_code", nullable = false, unique = true, length = 50)
     private String applicationCode;
@@ -57,12 +61,12 @@ public class Application {
 		this.applicationId = applicationId;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public String getApplicationCode() {
@@ -136,6 +140,8 @@ public class Application {
 	public void setRejectedById(Long rejectedById) {
 		this.rejectedById = rejectedById;
 	}
+
+
 
      
 }

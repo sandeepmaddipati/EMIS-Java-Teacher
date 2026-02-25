@@ -12,6 +12,7 @@ import com.tns.dto.TeachingQualificationRequest;
 import com.tns.dto.TeachingQualificationResponse;
 import com.tns.model.LookupCategory;
 import com.tns.model.TeachingQualification;
+import com.tns.model.User;
 import com.tns.repository.LookupCategoryRepository;
 import com.tns.repository.TeachingQualificationRepository;
 
@@ -44,7 +45,7 @@ public class TeachingQualificationService {
 
     // Save or Update
     public ApiResponse<TeachingQualificationResponse> saveOrUpdate(TeachingQualificationRequest request) {
-        Optional<TeachingQualification> existing = repository.findByUserId(request.getUserId())
+        Optional<TeachingQualification> existing = repository.findByUser_UserId(request.getUserId())
                 .stream()
                 .filter(q -> q.getCertificationName().equalsIgnoreCase(request.getCertificationName()))
                 .findFirst();
@@ -57,7 +58,8 @@ public class TeachingQualificationService {
             message = "Teaching qualification updated successfully";
         } else {
             entity = new TeachingQualification();
-            entity.setUserId(request.getUserId());
+            User user=new User();
+           user.setUserId(request.getUserId());
             message = "Teaching qualification created successfully";
         }
 
@@ -76,7 +78,7 @@ public class TeachingQualificationService {
 
     // Get All by UserId
     public List<TeachingQualificationResponse> getByUserId(Long userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUser_UserId(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
@@ -85,7 +87,7 @@ public class TeachingQualificationService {
     private TeachingQualificationResponse mapToResponse(TeachingQualification entity) {
         TeachingQualificationResponse dto = new TeachingQualificationResponse();
         dto.setTeachingId(entity.getTeachingId());
-        dto.setUserId(entity.getUserId());
+        dto.setUserId(entity.getUser().getUserId());
        
         dto.setInstitutionName(entity.getInstitutionName());
         dto.setCertificationTypeId(entity.getCertificationTypeId());
