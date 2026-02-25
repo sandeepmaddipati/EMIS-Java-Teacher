@@ -12,6 +12,7 @@ import com.tns.dto.DocumentRequest;
 import com.tns.dto.DocumentResponse;
 import com.tns.model.Document;
 import com.tns.model.LookupCategory;
+import com.tns.model.User;
 import com.tns.repository.DocumentRepository;
 import com.tns.repository.LookupCategoryRepository;
 
@@ -40,7 +41,7 @@ public class DocumentService{
     }
 	
 	public ApiResponse<DocumentResponse> saveOrUpdate(DocumentRequest request){
-		Optional<Document> existing = repository.findByUserId(request.getUserId())
+		Optional<Document> existing = repository.findByuser_UserId(request.getUserId())
 		.stream()
 		.filter(d -> d.getFileName().equalsIgnoreCase(request.getFileName()))
         .findFirst();
@@ -53,7 +54,8 @@ public class DocumentService{
           }else {
         	  
         	  entity=new Document();
-        	  entity.setUserId(request.getUserId());
+        	  User user=new User();
+        	  user.setUserId(request.getUserId());
                message="Documents Saved Successfully";
           }
           
@@ -69,7 +71,7 @@ public class DocumentService{
 	}
 	
 	public List<DocumentResponse> getByUserId ( Long userId){
-		return repository.findByUserId(userId)
+		return repository.findByuser_UserId(userId)
 				.stream()
 				.map(this::mapToResponse)
 				.toList();
@@ -77,7 +79,7 @@ public class DocumentService{
 	 private DocumentResponse mapToResponse(Document entity) {
 	        DocumentResponse dto = new DocumentResponse();
 	        dto.setDocumentId(entity.getDocumentId());
-	        dto.setUserId(entity.getUserId());
+	        dto.setUserId(entity.getUser().getUserId());
 	        dto.setDocumentTypeId(entity.getDocumentTypeId());
 	        dto.setDocumentType(resolveLookupValue("document_types",entity.getDocumentTypeId()));
 	        dto.setFileName(entity.getFileName());

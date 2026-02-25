@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 import com.tns.model.Document;
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-    List<Document> findByUserId(Long userId);
+    List<Document> findByuser_UserId(Long userId);
 }

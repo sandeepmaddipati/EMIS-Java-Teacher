@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 import com.tns.model.PersonalInfo;
 @Repository
 public interface PersonalInfoRepository extends JpaRepository<PersonalInfo, Long> {
-    Optional<PersonalInfo> findByUserId(Long userId);
+    Optional<PersonalInfo> findByUser_UserId(Long userId);
 }	

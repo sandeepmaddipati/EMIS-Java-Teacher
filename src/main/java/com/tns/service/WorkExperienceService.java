@@ -11,6 +11,7 @@ import com.tns.dto.ApiResponse;
 import com.tns.dto.WorkExperienceRequest;
 import com.tns.dto.WorkExperienceResponse;
 import com.tns.model.LookupCategory;
+import com.tns.model.User;
 import com.tns.model.WorkExperience;
 import com.tns.repository.LookupCategoryRepository;
 import com.tns.repository.WorkExperienceRepository;
@@ -43,7 +44,7 @@ public class WorkExperienceService{
 	
 	public ApiResponse<WorkExperienceResponse> saveOrUpdate(WorkExperienceRequest request){
 		
-		Optional<WorkExperience> existing= repository.findByUserId(request.getUserId())
+		Optional<WorkExperience> existing= repository.findByUser_UserId(request.getUserId())
 				.stream()
 				.filter(w -> w.getJobTitle().equalsIgnoreCase(request.getJobTitle())
                         && w.getInstitutionName().equalsIgnoreCase(request.getInstitutionName()))
@@ -57,8 +58,8 @@ public class WorkExperienceService{
 		}else {
 			
 			entity=new WorkExperience();
-			
-			entity.setUserId(request.getUserId());
+			User user=new User();
+			user.setUserId(request.getUserId());
 			message="Work Experinece Saved Successfully";
 		}
 		entity.setJobTitle(request.getJobTitle());
@@ -89,7 +90,7 @@ public class WorkExperienceService{
 	}
 	
 	 public List<WorkExperienceResponse> getByUserId(Long userId) {
-	        return repository.findByUserId(userId)
+	        return repository.findByUser_UserId(userId)
 	                .stream()
 	                .map(this::mapToResponse)
 	                .toList();
@@ -98,7 +99,7 @@ public class WorkExperienceService{
 	 	private WorkExperienceResponse mapToResponse (WorkExperience entity) {
 	 		WorkExperienceResponse dto=new WorkExperienceResponse();
 	 		dto.setWorkId(entity.getWorkId());
-	 		 dto.setUserId(entity.getUserId());
+	 		 dto.setUserId(entity.getUser().getUserId());
 	         dto.setJobTitle(entity.getJobTitle());
 	         dto.setInstitutionName(entity.getInstitutionName());
 	         dto.setRegionId(entity.getRegionId());

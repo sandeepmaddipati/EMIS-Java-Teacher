@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 import com.tns.model.WorkExperience;
 @Repository
 public interface WorkExperienceRepository extends JpaRepository<WorkExperience, Long> {
-    List<WorkExperience> findByUserId(Long userId);
+    List<WorkExperience> findByUser_UserId(Long userId);
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -18,8 +20,10 @@ public class Document {
     @Column(name="document_id")
     private Long documentId;
 
-    @Column(name="user_id",nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
 
     @Column(name="document_type_id",nullable = false)
     private Long documentTypeId;   // from lookup_values
@@ -44,12 +48,12 @@ public class Document {
 		this.documentId = documentId;
 	}
 
-	public Long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 	public Long getDocumentTypeId() {
@@ -92,6 +96,7 @@ public class Document {
 		this.lastUpdated = lastUpdated;
 	}
 
+	
     
     
 }

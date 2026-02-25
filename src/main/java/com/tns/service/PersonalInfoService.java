@@ -11,6 +11,7 @@ import com.tns.dto.PersonalInfoRequest;
 import com.tns.dto.PersonalInfoResponse;
 import com.tns.model.LookupCategory;
 import com.tns.model.PersonalInfo;
+import com.tns.model.User;
 import com.tns.repository.LookupCategoryRepository;
 import com.tns.repository.PersonalInfoRepository;
 
@@ -43,7 +44,7 @@ public class PersonalInfoService {
 
 
     public ApiResponse<PersonalInfoResponse> saveOrUpdate(PersonalInfoRequest request) {
-        Optional<PersonalInfo> existing = repository.findByUserId(request.getUserId());
+        Optional<PersonalInfo> existing = repository.findByUser_UserId(request.getUserId());
 
         PersonalInfo entity;
         String message;
@@ -53,7 +54,9 @@ public class PersonalInfoService {
             message = "Personal info updated successfully";
         } else {
             entity = new PersonalInfo();
-            entity.setUserId(request.getUserId());
+            User user = new User();
+            user.setUserId(request.getUserId());  // only set the ID
+            entity.setUser(user); 
             message = "Personal info created successfully";
         }
 
@@ -77,14 +80,14 @@ public class PersonalInfoService {
     }
 
     public Optional<PersonalInfoResponse> getByUserId(Long userId) {
-        return repository.findByUserId(userId)
+        return repository.findByUser_UserId(userId)
                          .map(this::mapToResponse);
     }
 
     private PersonalInfoResponse mapToResponse(PersonalInfo entity) {
         PersonalInfoResponse dto = new PersonalInfoResponse();
         dto.setPersonalId(entity.getPersonalId());
-        dto.setUserId(entity.getUserId());
+        dto.setUserId(entity.getUser().getUserId());
         dto.setFullName(entity.getFullName());
         dto.setNationalIdNumber(entity.getNationalIdNumber());
         dto.setDateOfBirth(entity.getDateOfBirth());

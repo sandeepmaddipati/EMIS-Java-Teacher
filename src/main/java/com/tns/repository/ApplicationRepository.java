@@ -10,5 +10,5 @@ import com.tns.model.Application;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     Optional<Application> findByApplicationCode(String applicationCode);
-    List<Application> findByUserId(Long userId);
+    List<Application> findByUser_UserId(Long userId);
 }
