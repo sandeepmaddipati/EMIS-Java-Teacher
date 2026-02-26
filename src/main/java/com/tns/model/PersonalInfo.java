@@ -18,7 +18,9 @@ public class PersonalInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Column(name="personal_info")
+
     private Long personalId;
 
     @OneToOne

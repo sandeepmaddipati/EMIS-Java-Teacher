@@ -60,7 +60,9 @@ public class WorkExperienceService{
 			entity=new WorkExperience();
 			User user=new User();
 			user.setUserId(request.getUserId());
+
 			 entity.setUser(user); 
+
 			message="Work Experinece Saved Successfully";
 		}
 		entity.setJobTitle(request.getJobTitle());
