@@ -7,13 +7,13 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public class ApplicationRequest {
+	
+	 private Long applicationId;
 
     @NotNull 
     private Long userId;
 
-    @NotBlank 
-    @Size(max = 50) 
-    private String applicationCode;
+    
 
     @NotNull 
     private Long regionId;
@@ -34,13 +34,7 @@ public class ApplicationRequest {
         this.userId = userId;
     }
 
-    public String getApplicationCode() {
-        return applicationCode;
-    }
-    public void setApplicationCode(String applicationCode) {
-        this.applicationCode = applicationCode;
-    }
-
+    
     public Long getRegionId() {
         return regionId;
     }
@@ -82,4 +76,10 @@ public class ApplicationRequest {
     public void setRejectedById(Long rejectedById) {
         this.rejectedById = rejectedById;
     }
+	public Long getApplicationId() {
+		return applicationId;
+	}
+	public void setApplicationId(Long applicationId) {
+		this.applicationId = applicationId;
+	}
 }

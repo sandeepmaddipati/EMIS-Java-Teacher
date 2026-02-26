@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
 import com.tns.model.Application;
 @Repository
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
-    Optional<Application> findByApplicationCode(String applicationCode);
+    Optional<Application> findByApplicationId(Long applicationId);
     List<Application> findByUser_UserId(Long userId);
 }
