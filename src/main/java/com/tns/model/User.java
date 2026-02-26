@@ -23,7 +23,7 @@ public class User {
     private Long userId;
 
     @Column(nullable = false, unique = true)
-    private String username;
+    private String fullname;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -52,12 +52,12 @@ public class User {
 		this.userId = userId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getFullname() {
+		return fullname;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setFullname(String fullname) {
+		this.fullname = fullname;
 	}
 
 	public String getEmail() {

@@ -26,8 +26,8 @@ public class AuthService {
     @Autowired private BCryptPasswordEncoder encoder;
 
     public UserResponse register(RegisterRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException("Username already exists");
+        if (userRepository.findByFullname(request.getFullname()).isPresent()) {
+            throw new RuntimeException("Name already exists");
         }
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
@@ -37,7 +37,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("Invalid role provided"));
 
         User user = new User();
-        user.setUsername(request.getUsername().trim());
+        user.setFullname(request.getFullname().trim());
 
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
@@ -54,7 +54,7 @@ public class AuthService {
         // Build DTO
         UserResponse response = new UserResponse();
         response.setUserId(user.getUserId());
-        response.setUsername(user.getUsername());
+        response.setFullname(user.getFullname());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
         response.setIsActive(user.getIsActive());
@@ -64,8 +64,8 @@ public class AuthService {
     }
 
     public UserResponse login(LoginRequest request) {
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid username"));
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email"));
 
         if (!user.getIsActive()) {
             throw new RuntimeException("User account is inactive");
@@ -81,7 +81,7 @@ public class AuthService {
 
         UserResponse response = new UserResponse();
         response.setUserId(user.getUserId());
-        response.setUsername(user.getUsername());
+        response.setFullname(user.getFullname());
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
         response.setIsActive(user.getIsActive());
@@ -101,7 +101,7 @@ public class AuthService {
 
             UserResponse response = new UserResponse();
             response.setUserId(user.getUserId());
-            response.setUsername(user.getUsername());
+            response.setFullname(user.getFullname());
             response.setEmail(user.getEmail());
             response.setPhone(user.getPhone());
             response.setIsActive(user.getIsActive());
