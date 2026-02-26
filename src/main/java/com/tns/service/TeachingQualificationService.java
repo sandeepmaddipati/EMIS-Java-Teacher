@@ -60,6 +60,7 @@ public class TeachingQualificationService {
             entity = new TeachingQualification();
             User user=new User();
            user.setUserId(request.getUserId());
+           entity.setUser(user); 
             message = "Teaching qualification created successfully";
         }
 
@@ -99,6 +100,7 @@ public class TeachingQualificationService {
         
         dto.setCertificatePath(entity.getCertificatePath());
         dto.setCreatedAt(entity.getCreatedAt());
+        dto.setLastUpdated(entity.getLastUpdated());
         return dto;
     }
 }

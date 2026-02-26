@@ -56,6 +56,7 @@ public class DocumentService{
         	  entity=new Document();
         	  User user=new User();
         	  user.setUserId(request.getUserId());
+        	  entity.setUser(user); 
                message="Documents Saved Successfully";
           }
           
@@ -85,7 +86,7 @@ public class DocumentService{
 	        dto.setFileName(entity.getFileName());
 	        dto.setFilePath(entity.getFilePath());
 	        dto.setUploadedAt(entity.getUploadedAt());
-	       
+	       dto.setLastUpdated(entity.getLastUpdated());
 	        return dto;
 	    }
 
