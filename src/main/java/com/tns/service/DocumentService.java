@@ -56,6 +56,7 @@ public class DocumentService{
         	  entity=new Document();
         	  User user=new User();
         	  user.setUserId(request.getUserId());
+        	  entity.setUser(user);
                message="Documents Saved Successfully";
           }
           

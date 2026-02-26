@@ -17,6 +17,7 @@ public class TeachingQualification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="teaching_id")
     private Long teachingId;
 
     @ManyToOne
