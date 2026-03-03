@@ -45,5 +45,4 @@ public class UserRole {
 		this.role = role;
 	}
 
-    // getters & setters
-}
+    }

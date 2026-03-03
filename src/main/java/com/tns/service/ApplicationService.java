@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.tns.dto.ApiResponse;
 import com.tns.dto.ApplicationRequest;
@@ -20,9 +21,11 @@ import com.tns.repository.DocumentRepository;
 import com.tns.repository.LookupCategoryRepository;
 import com.tns.repository.PersonalInfoRepository;
 import com.tns.repository.TeachingQualificationRepository;
+import com.tns.repository.UserRepository;
 import com.tns.repository.WorkExperienceRepository;
 
 @Service
+@Transactional
 public class ApplicationService {
 
     @Autowired private ApplicationRepository repository;
@@ -31,39 +34,59 @@ public class ApplicationService {
     @Autowired private TeachingQualificationRepository teachingRepo;
     @Autowired private WorkExperienceRepository workRepo;
     @Autowired private DocumentRepository documentRepo;
-    @Autowired private LookupCategoryRepository categoryRepo;
-    @Autowired private JdbcTemplate jdbcTemplate;
 
-    // =============================
-    // MAIN SUBMIT / SAVE METHOD
-    // =============================
+    @Autowired private UserRepository userRepository;
+    
+    @Autowired
+	private LookupCategoryRepository categoryRepo;
+	@Autowired
+	private JdbcTemplate jdbcTemplate;
+	
+	private String resolveLookupValue(String categoryKey,Long id) {
+        if (id == null) return null;
+        LookupCategory category=categoryRepo.findByCategoryKeyAndIsActiveTrue(categoryKey)
+        		.orElseThrow(()-> new RuntimeException("Category Not Found:"+categoryKey));
+
+        	      String sql = "SELECT " + category.getValueColumn() +
+        	              " FROM " + category.getTableName() +
+        	              " WHERE " + category.getIdColumn() + " = ? AND is_active = true";
+
+        	 return jdbcTemplate.queryForObject(sql, String.class, id);
+    }
+
+    // =========================================
+    // SUBMIT / SAVE APPLICATION
+    // =========================================
     public ApiResponse<ApplicationResponse> submitApplication(ApplicationRequest request) {
 
-        boolean personalInfoExists = personalRepo.findByUser_UserId(request.getUserId()).isPresent();
-        boolean academicExists = !academicRepo.findByUser_UserId(request.getUserId()).isEmpty();
-        boolean teachingExists = !teachingRepo.findByUser_UserId(request.getUserId()).isEmpty();
-        boolean workExists = !workRepo.findByUser_UserId(request.getUserId()).isEmpty();
-        boolean documentsExist = !documentRepo.findByuser_UserId(request.getUserId()).isEmpty();
+        Long userId = request.getUserId();
 
-        boolean allSectionsCompleted = personalInfoExists &&
-                                       academicExists &&
-                                       teachingExists &&
-                                       workExists &&
-                                       documentsExist;
+        boolean personalInfoExists = personalRepo.findByUser_UserId(userId).isPresent();
+        boolean academicExists = !academicRepo.findByUser_UserId(userId).isEmpty();
+        boolean teachingExists = !teachingRepo.findByUser_UserId(userId).isEmpty();
+        boolean workExists = !workRepo.findByUser_UserId(userId).isEmpty();
+        boolean documentsExist = !documentRepo.findByuser_UserId(userId).isEmpty();
+
+        boolean allSectionsCompleted =
+                personalInfoExists &&
+                academicExists &&
+                teachingExists &&
+                workExists &&
+                documentsExist;
 
         Application entity;
 
-        // =============================
-        // FETCH OR CREATE
-        // =============================
+        // ================= FETCH OR CREATE =================
         if (request.getApplicationId() != null) {
 
             entity = repository.findById(request.getApplicationId())
                     .orElseThrow(() -> new RuntimeException("Application not found"));
 
-            // Prevent editing approved or rejected applications
+            // Prevent editing Approved (3) or Rejected (4)
             if (entity.getApplicationStatusId() != null &&
-                (entity.getApplicationStatusId() == 3L || entity.getApplicationStatusId() == 4L)) {
+               (entity.getApplicationStatusId() == 3L ||
+                entity.getApplicationStatusId() == 4L)) {
+
                 throw new RuntimeException("Approved/Rejected applications cannot be modified.");
             }
 
@@ -72,24 +95,21 @@ public class ApplicationService {
             entity = new Application();
             entity.setApplicationCode(generateApplicationCode());
             entity.setCreatedAt(LocalDateTime.now());
+
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            entity.setUser(user);
         }
 
-        // =============================
-        // MAP FIELDS
-        // =============================
-        User user = new User();
-        user.setUserId(request.getUserId());
-        entity.setUser(user);
-
+        // ================= MAP FIELDS =================
         entity.setRegionId(request.getRegionId());
         entity.setRemarks(request.getRemarks());
         entity.setLastUpdated(LocalDateTime.now());
 
-        // =============================
-        // STATUS LOGIC
-        // =============================
         String message;
 
+        // ================= STATUS LOGIC =================
         if (allSectionsCompleted) {
 
             if (entity.getApplicationStatusId() == null ||
@@ -113,30 +133,32 @@ public class ApplicationService {
         return new ApiResponse<>(200, message, mapToResponse(saved));
     }
 
-    // =============================
+    // =========================================
     // GET SUBMITTED APPLICATIONS
-    // =============================
+    // =========================================
     public List<ApplicationResponse> getSubmittedApplications(Long userId) {
+
         return repository.findByUser_UserId(userId)
                 .stream()
-                .filter(app -> app.getApplicationStatusId() != 1L)
+                .filter(app -> app.getApplicationStatusId() == 2L)
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    // =============================
+    // =========================================
     // GET ALL APPLICATIONS
-    // =============================
+    // =========================================
     public List<ApplicationResponse> getAllApplications(Long userId) {
+
         return repository.findByUser_UserId(userId)
                 .stream()
                 .map(this::mapToResponse)
                 .toList();
     }
 
-    // =============================
-    // MAP ENTITY TO RESPONSE
-    // =============================
+    // =========================================
+    // MAP ENTITY → DTO
+    // =========================================
     private ApplicationResponse mapToResponse(Application entity) {
 
         ApplicationResponse dto = new ApplicationResponse();
@@ -145,43 +167,29 @@ public class ApplicationService {
         dto.setUserId(entity.getUser().getUserId());
         dto.setApplicationCode(entity.getApplicationCode());
         dto.setRegionId(entity.getRegionId());
+        dto.setRegionName(resolveLookupValue("regions",entity.getRegionId()));
         dto.setApplicationStatusId(entity.getApplicationStatusId());
-
-        dto.setRegionName(resolveLookupValue("regions", entity.getRegionId()));
-        dto.setApplicationStatus(resolveLookupValue("application_statuses", entity.getApplicationStatusId()));
-
+        dto.setApplicationStatus(resolveLookupValue("application_statuses",entity.getApplicationStatusId()));
         dto.setSubmittedOn(entity.getSubmittedOn());
         dto.setLastUpdated(entity.getLastUpdated());
         dto.setRemarks(entity.getRemarks());
         dto.setCreatedAt(entity.getCreatedAt());
-        dto.setApprovedById(entity.getApprovedById());
-        dto.setRejectedById(entity.getRejectedById());
+
+        if (entity.getApprovedBy() != null) {
+            dto.setApprovedById(entity.getApprovedBy().getUserId());
+        }
+
+        if (entity.getRejectedBy() != null) {
+            dto.setRejectedById(entity.getRejectedBy().getUserId());
+        }
 
         return dto;
     }
 
-    // =============================
-    // GENERATE APPLICATION CODE
-    // =============================
+    // =========================================
+    // GENERATE CODE
+    // =========================================
     private String generateApplicationCode() {
         return "APP-" + System.currentTimeMillis();
-    }
-
-    // =============================
-    // RESOLVE LOOKUP VALUES
-    // =============================
-    private String resolveLookupValue(String categoryKey, Long id) {
-
-        if (id == null) return null;
-
-        LookupCategory category = categoryRepo
-                .findByCategoryKeyAndIsActiveTrue(categoryKey)
-                .orElseThrow(() -> new RuntimeException("Category Not Found: " + categoryKey));
-
-        String sql = "SELECT " + category.getValueColumn() +
-                     " FROM " + category.getTableName() +
-                     " WHERE " + category.getIdColumn() + " = ? AND is_active = true";
-
-        return jdbcTemplate.queryForObject(sql, String.class, id);
     }
 }

@@ -8,12 +8,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "applications")
+@Table(name = "applications",indexes = {
+        @Index(name = "idx_app_status", columnList = "application_status_id"),
+        @Index(name = "idx_app_region_status", columnList = "region_id, application_status_id")
+    })
 public class Application {
 
     @Id
@@ -47,11 +51,15 @@ public class Application {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @Column(name = "approved_by_id")
-    private Long approvedById;
+ // ================= APPROVED BY
+    @ManyToOne
+    @JoinColumn(name = "approved_by_id")
+    private User approvedBy;
 
-    @Column(name = "rejected_by_id")
-    private Long rejectedById;
+    // ================= REJECTED BY
+    @ManyToOne
+    @JoinColumn(name = "rejected_by_id")
+    private User rejectedBy;
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -125,20 +133,20 @@ public class Application {
 		this.createdAt = createdAt;
 	}
 
-	public Long getApprovedById() {
-		return approvedById;
+	public User getApprovedBy() {
+		return approvedBy;
 	}
 
-	public void setApprovedById(Long approvedById) {
-		this.approvedById = approvedById;
+	public void setApprovedBy(User approvedBy) {
+		this.approvedBy = approvedBy;
 	}
 
-	public Long getRejectedById() {
-		return rejectedById;
+	public User getRejectedBy() {
+		return rejectedBy;
 	}
 
-	public void setRejectedById(Long rejectedById) {
-		this.rejectedById = rejectedById;
+	public void setRejectedBy(User rejectedBy) {
+		this.rejectedBy = rejectedBy;
 	}
 
 

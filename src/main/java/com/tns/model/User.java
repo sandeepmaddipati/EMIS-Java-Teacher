@@ -1,7 +1,6 @@
 package com.tns.model;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -40,9 +39,7 @@ public class User {
     private LocalDateTime createdAt = LocalDateTime.now();
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserRole> userRoles = new HashSet<>();
-
-    public User() {}
+    private Set<UserRole> userRoles ;
 
 	public Long getUserId() {
 		return userId;
@@ -100,5 +97,14 @@ public class User {
 		this.createdAt = createdAt;
 	}
 
+	public Set<UserRole> getUserRoles() {
+		return userRoles;
+	}
+
+	public void setUserRoles(Set<UserRole> userRoles) {
+		this.userRoles = userRoles;
+	}
+
+   
  
 }
